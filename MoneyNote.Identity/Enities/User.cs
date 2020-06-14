@@ -12,8 +12,7 @@ namespace MoneyNote.Identity.Enities
     {       
         public string Username { get; set; }
         public string Password { get; set; }
-        public DateTime? LastLogedin { get; set; }
-
-       
+        public DateTime? LastLogedin { get; set; }       
     }
+
 }

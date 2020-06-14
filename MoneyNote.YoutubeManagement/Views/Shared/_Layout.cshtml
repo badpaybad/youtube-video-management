@@ -3,6 +3,9 @@
 This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
 -->
+@{ 
+    var layoutdata = LayoutModel.Init(Context);
+}
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -21,10 +24,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <div class="wrapper">
 
         <!-- Navbar -->
-        <partial name="_Navbar" />
+        <partial name="_Navbar" model="layoutdata" />
         <!-- /.navbar -->
         <!-- Main Sidebar Container -->
-        <partial name="_MainSidebar" />
+        <partial name="_MainSidebar"  model="layoutdata" />
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
@@ -67,7 +70,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </div>
         <!-- /.content-wrapper -->
         <!-- Control Sidebar -->
-        <partial name="_ControlSidebar" />
+        <partial name="_ControlSidebar"  model="layoutdata" />
         <!-- /.control-sidebar -->
         <!-- Main Footer -->
         <footer class="main-footer">

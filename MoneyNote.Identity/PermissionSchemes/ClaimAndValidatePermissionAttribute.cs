@@ -7,14 +7,19 @@ using System.Linq;
 
 namespace MoneyNote.Identity.PermissionSchemes
 {
-    public class PermissionDescriptorAttribute : Attribute, IAuthorizationFilter
+    public class ClaimAndValidatePermissionAttribute : Attribute, IAuthorizationFilter
     {
-        string _code;
+        string _permissionCode;
+        string _moduleCode;
         bool _isApi;
-        public PermissionDescriptorAttribute(string code, bool isApi = false)
+        public ClaimAndValidatePermissionAttribute(string permissionCode, string moduleCode, bool isApi = false)
         {
-            _code = code;
+            _permissionCode = permissionCode;
+            _moduleCode = moduleCode;
             _isApi = isApi;
+
+            Auth.CreateOrUpdateSysModule(moduleCode);
+            Auth.CreateOrUpdateSysPermission(permissionCode, moduleCode);
         }
         public void OnAuthorization(AuthorizationFilterContext context)
         {
@@ -25,7 +30,7 @@ namespace MoneyNote.Identity.PermissionSchemes
 
             var token = Auth.GetToken(context.HttpContext);
 
-            System.Net.HttpStatusCode httpStatusCode = Auth.ValidatePermission(_code);
+            System.Net.HttpStatusCode httpStatusCode = Auth.ValidatePermission(token, _permissionCode, _moduleCode);
             context.HttpContext.Response.StatusCode = (int)httpStatusCode;
 
             if (httpStatusCode == System.Net.HttpStatusCode.Unauthorized)

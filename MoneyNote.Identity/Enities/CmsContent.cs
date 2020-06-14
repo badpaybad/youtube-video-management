@@ -9,5 +9,7 @@ namespace MoneyNote.Identity.Enities
         public string Thumbnail { get; set; }
         public string Description { get; set; }
         public string UrlRef { get; set; }
+
+        public long CountView { get; set; }
     }
 }

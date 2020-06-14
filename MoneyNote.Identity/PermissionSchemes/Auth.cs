@@ -11,31 +11,97 @@ using System.Security.Cryptography;
 using System.Security.Policy;
 using System.Text;
 using System.Text.Unicode;
+using System.Threading.Tasks;
 
 namespace MoneyNote.Identity.PermissionSchemes
 {
     public class Auth
     {
+        static List<UserAlc> _userAlcs = new List<UserAlc>();
+
+        static Dictionary<Guid, List<UserAlc>> _lookupUserAcls = new Dictionary<Guid, List<UserAlc>>();
+
+        static List<SysModule> _sysModules = new List<SysModule>();
+
+        static List<SysPermission> _sysPermissions = new List<SysPermission>();
+
+        static object _lock = new object();
         static Auth()
         {
 
         }
 
+        public static void CreateOrUpdateSysModule(string code)
+        {
+            Task.Run(() =>
+            {
+                if (string.IsNullOrEmpty(code)) return;
+                if (_sysModules.Any(i => i.Code == code)) return;
+
+                using (var db = new MoneyNoteDbContext())
+                {
+                    var existed = db.SysModules.FirstOrDefault(i => i.Code == code);
+                    if (existed == null)
+                    {
+                        db.SysModules.Add(new SysModule { Code = code });
+                        db.SaveChanges();
+                    }
+                }
+            });
+        }
+        public static void CreateOrUpdateSysPermission(string permissionCode, string moduleCode)
+        {
+            Task.Run(() =>
+            {
+                if (string.IsNullOrEmpty(permissionCode)) return;
+                if (_sysPermissions.Any(i => i.Code == permissionCode && i.ModuleCode == moduleCode)) return;
+
+                using (var db = new MoneyNoteDbContext())
+                {
+                    var existed = db.SysPermissions.FirstOrDefault(i => i.Code == permissionCode && i.ModuleCode == moduleCode);
+                    if (existed == null)
+                    {
+                        db.SysPermissions.Add(new SysPermission { Code = permissionCode, ModuleCode = moduleCode });
+                        db.SaveChanges();
+                    }
+                }
+            });
+        }
+
         public static void InitSupperAdmin()
         {
-            using (var db = new MoneyNoteDbContext())
+            lock (_lock)
             {
-                var user = db.Users.FirstOrDefault(i => i.Username.Equals("supperadmin"));
-                if (user == null)
+                using (var db = new MoneyNoteDbContext())
                 {
-                    db.Users.Add(new User
+                    var user = db.Users.FirstOrDefault(i => i.Username.Equals("supperadmin"));
+                    if (user == null)
                     {
-                        Username = "supperadmin",
-                        Password = HashPassword("123@123")
-                    });
-                    db.SaveChanges();
+                        db.Users.Add(new User
+                        {
+                            Username = "supperadmin",
+                            Password = HashPassword("123@123")
+                        });
+                        db.SaveChanges();
+                    }
+
+                    try
+                    {
+                        _userAlcs = db.UserAlcs.Where(i => i.IsDeleted == false).ToList();
+                        _sysModules = db.SysModules.Where(i => i.IsDeleted == false).ToList();
+                        _sysPermissions = db.SysPermissions.Where(i => i.IsDeleted == false).ToList();
+                    }
+                    catch { }
+
+                }
+
+                var tempAcls = _userAlcs.GroupBy(i => i.UserId).Select(i => new { UserId = i.Key, Acls = i.DefaultIfEmpty() }).ToList();
+                foreach (var itm in tempAcls)
+                {
+                    _lookupUserAcls.Add(itm.UserId, itm.Acls.ToList());
                 }
             }
+
         }
 
         public static string GenerateToken(string salt = "")
@@ -81,6 +147,14 @@ namespace MoneyNote.Identity.PermissionSchemes
                 MemoryMessageBus.Instance.CacheSet($"{token}_module", new List<string> { "SupperAdmin" });
                 MemoryMessageBus.Instance.CacheSet($"{token}_permission", new List<string> { "SupperAdmin" });
             }
+            else
+            {
+                if (_lookupUserAcls.TryGetValue(user.Id, out List<UserAlc> userAcls) && userAcls != null && userAcls.Count > 0)
+                {
+                    MemoryMessageBus.Instance.CacheSet($"{token}_module", userAcls.Select(i => i.ModuleCode).Distinct().ToList());
+                    MemoryMessageBus.Instance.CacheSet($"{token}_permission", userAcls.Select(i => i.PermissionCode).Distinct().ToList());
+                }
+            }
 
             return true;
         }
@@ -103,7 +177,7 @@ namespace MoneyNote.Identity.PermissionSchemes
             return true;
         }
 
-        public static User Get(string token="")
+        public static User Get(string token = "")
         {
             return MemoryMessageBus.Instance.CacheGet<User>(token);
         }
@@ -119,7 +193,7 @@ namespace MoneyNote.Identity.PermissionSchemes
 
             if (string.IsNullOrEmpty(token))
             {
-                if(context.Session.TryGetValue("__CurrentUserToken", out byte[] utoken))
+                if (context.Session.TryGetValue("__CurrentUserToken", out byte[] utoken))
                 {
                     if (utoken != null)
                     {
@@ -167,7 +241,7 @@ namespace MoneyNote.Identity.PermissionSchemes
             return HttpStatusCode.OK;
         }
 
-        public static HttpStatusCode ValidatePermission(string token, params string[] codes)
+        public static HttpStatusCode ValidatePermission(string token, string permissionCode, string moduleCode)
         {
             var user = Auth.Get(token);
 
@@ -180,11 +254,22 @@ namespace MoneyNote.Identity.PermissionSchemes
             var permissions = MemoryMessageBus.Instance.CacheGet<List<string>>($"{token}_permission");
 
             var isSupperAdmin = (modules.Any(i => i == "SupperAdmin") && permissions.Any(i => i == "SupperAdmin"));
-            if (isSupperAdmin) return HttpStatusCode.OK;
+            if (isSupperAdmin)
+            {
+                return HttpStatusCode.OK;
+            }
 
             //TODO: check module code with user loged compare to codes 
 
-            return HttpStatusCode.OK;
+            if (_lookupUserAcls.TryGetValue(user.Id, out List<UserAlc> userAcls) && userAcls != null && userAcls.Count > 0)
+            {
+                if (userAcls.Any(i => i.ModuleCode == moduleCode) && userAcls.Any(i => i.PermissionCode == permissionCode))
+                {
+                    return HttpStatusCode.OK;
+                }
+            }
+
+            return HttpStatusCode.Unauthorized;
         }
     }
 }
