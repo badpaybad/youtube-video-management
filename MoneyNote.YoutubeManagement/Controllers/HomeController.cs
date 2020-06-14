@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MoneyNote.Identity.PermissionSchemes;
 using MoneyNote.YoutubeManagement.Models;
 
 namespace MoneyNote.YoutubeManagement.Controllers
 {
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -27,9 +30,17 @@ namespace MoneyNote.YoutubeManagement.Controllers
         {
             return View();
         }
-        public IActionResult Category()
+
+        public IActionResult Login()
         {
             return View();
+        }
+
+        public IActionResult Logout()
+        {
+            Auth.Logout(HttpContext);
+
+            return Redirect("/");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

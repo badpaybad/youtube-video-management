@@ -122,6 +122,11 @@ namespace MoneyNote.Core
             SetExpire(key, expireAt);
         }
 
+        public void CacheRemove(string key)
+        {
+            _cache.TryRemove(key, out object oldVal);
+        }
+
         public void CacheSetUseSlideExpire<T>(string key, T data, TimeSpan? slideInterval = null)
         {
             _cache[key] = data;

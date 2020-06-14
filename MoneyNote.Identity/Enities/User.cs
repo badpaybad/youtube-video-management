@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Principal;
 using System.Text;
 
 namespace MoneyNote.Identity.Enities
@@ -11,5 +12,8 @@ namespace MoneyNote.Identity.Enities
     {       
         public string Username { get; set; }
         public string Password { get; set; }
+        public DateTime? LastLogedin { get; set; }
+
+       
     }
 }
