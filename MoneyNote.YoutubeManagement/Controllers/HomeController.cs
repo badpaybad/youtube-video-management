@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using MoneyNote.Identity.Enities;
 using MoneyNote.Identity.PermissionSchemes;
 using MoneyNote.YoutubeManagement.Models;
 
@@ -31,11 +33,26 @@ namespace MoneyNote.YoutubeManagement.Controllers
             return View();
         }
 
+        [Route("/Login")]
         public IActionResult Login()
         {
             return View();
         }
 
+        [HttpPost]
+        [Route("/Login")]
+        public IActionResult Login([FromBody] User user)
+        {
+            var ok = Auth.Login(user.Username, user.Password, HttpContext, out string token);
+
+            return Json(new AjaxResponse<string>
+            {
+                code = ok == true ? 1 : 0,
+                message = ok == true ? "Loged" : "Wrong username or password",
+                data = token
+            });
+        }
+        [Route("/Logout")]
         public IActionResult Logout()
         {
             Auth.Logout(HttpContext);

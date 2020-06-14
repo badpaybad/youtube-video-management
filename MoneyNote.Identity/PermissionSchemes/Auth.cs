@@ -56,14 +56,15 @@ namespace MoneyNote.Identity.PermissionSchemes
 
         public static bool Login(string username, string password, HttpContext context, out string token)
         {
+            token = string.Empty;
             User user;
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)) return false;
+
             var encryptPwd = HashPassword(password);
             using (var db = new MoneyNoteDbContext())
             {
                 user = db.Users.FirstOrDefault(i => i.Username.Equals(username) && i.Password.Equals(encryptPwd));
             }
-
-            token = string.Empty;
 
             if (user == null) return false;
 
@@ -102,7 +103,7 @@ namespace MoneyNote.Identity.PermissionSchemes
             return true;
         }
 
-        public static User Get(string token)
+        public static User Get(string token="")
         {
             return MemoryMessageBus.Instance.CacheGet<User>(token);
         }
@@ -118,10 +119,12 @@ namespace MoneyNote.Identity.PermissionSchemes
 
             if (string.IsNullOrEmpty(token))
             {
-                context.Session.TryGetValue("__CurrentUserToken", out byte[] utoken);
-                if (utoken != null)
+                if(context.Session.TryGetValue("__CurrentUserToken", out byte[] utoken))
                 {
-                    token = UTF8Encoding.UTF8.GetString(utoken);
+                    if (utoken != null)
+                    {
+                        token = UTF8Encoding.UTF8.GetString(utoken);
+                    }
                 }
             }
 

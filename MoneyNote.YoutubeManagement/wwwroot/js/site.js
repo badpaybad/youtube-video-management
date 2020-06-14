@@ -1,4 +1,24 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿var Auth = {
+    login: function (uidDomId, pwdDomId) {
+        var uid = jQuery('#' + uidDomId).val();
+        var pwd = jQuery('#' + pwdDomId).val();
 
-// Write your JavaScript code.
+        jQuery.ajax({
+            method: "POST",
+            url: "/Login",
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify({ Username: uid, Password: pwd })
+        })
+            .done(function (msg) {
+                if (msg.code == 1) {
+
+                    if (localStorage) { localStorage.setItem("usertoken", msg.data); }
+
+                    window.location = "/";
+                } else {
+                    alert(msg.message);
+                }
+            });
+    }
+}
