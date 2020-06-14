@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MoneyNote.YoutubeManagement.Configs;
 
 namespace MoneyNote.YoutubeManagement
 {
@@ -16,6 +17,8 @@ namespace MoneyNote.YoutubeManagement
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            Configs.Config.Init(configuration);
         }
 
         public IConfiguration Configuration { get; }
@@ -48,12 +51,15 @@ namespace MoneyNote.YoutubeManagement
 
             app.UseEndpoints(endpoints =>
             {
+          //      endpoints.MapAreaControllerRoute(
+          //"Admin",
+          //"Admin",
+          //"Admin/{controller=Home}/{action=Index}/{id?}");
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapControllerRoute(
-                    name: "AdminArea",
-                    pattern: "Admin/{controller=Home}/{action=Index}/{id?}");
+               
 
             });
         }

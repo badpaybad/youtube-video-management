@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyNote.YoutubeManagement", "MoneyNote.YoutubeManagement.csproj", "{5190B51A-5BEF-46AB-BF68-37962E387799}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyNote.YoutubeManagement", "MoneyNote.YoutubeManagement.csproj", "{5190B51A-5BEF-46AB-BF68-37962E387799}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyNote.Core", "..\MoneyNote.Core\MoneyNote.Core.csproj", "{51519528-9CA5-4877-8D45-AA217065A528}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyNote.Core", "..\MoneyNote.Core\MoneyNote.Core.csproj", "{51519528-9CA5-4877-8D45-AA217065A528}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyNote.Identity", "..\MoneyNote.Identity\MoneyNote.Identity.csproj", "{79FA74D9-23E2-4261-8517-72F71A675369}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{51519528-9CA5-4877-8D45-AA217065A528}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51519528-9CA5-4877-8D45-AA217065A528}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51519528-9CA5-4877-8D45-AA217065A528}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79FA74D9-23E2-4261-8517-72F71A675369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79FA74D9-23E2-4261-8517-72F71A675369}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79FA74D9-23E2-4261-8517-72F71A675369}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79FA74D9-23E2-4261-8517-72F71A675369}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
