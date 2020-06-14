@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MoneyNote.Identity.Enities
 {
+    [Table("CmsRelation")]
     public class CmsRelation : AbastractEntity
     {
         [Column(TypeName = "varchar(36")]
