@@ -129,12 +129,14 @@ namespace MoneyNote.Identity.PermissionSchemes
             var encryptPwd = HashPassword(password);
             using (var db = new MoneyNoteDbContext())
             {
-                user = db.Users.FirstOrDefault(i => i.Username.Equals(username) && i.Password.Equals(encryptPwd));
+                user = db.Users.FirstOrDefault(i => i.Username.Equals(username) && i.Password.Equals(encryptPwd));                
             }
 
             if (user == null) return false;
 
             token = GenerateToken(username);
+            user.LastLogedin = DateTime.Now;
+            user.LastToken = token;
 
             if (context != null)
             {
@@ -155,7 +157,16 @@ namespace MoneyNote.Identity.PermissionSchemes
                     MemoryMessageBus.Instance.CacheSet($"{token}_permission", userAcls.Select(i => i.PermissionCode).Distinct().ToList());
                 }
             }
-
+            Task.Run(() =>
+            {
+                using (var db = new MoneyNoteDbContext())
+                {
+                    var tempU = db.Users.FirstOrDefault(i => i.Id == user.Id);
+                    tempU.LastToken = user.LastToken;
+                    tempU.LastLogedin = user.LastLogedin;
+                    db.SaveChanges();
+                }
+            });
             return true;
         }
         public static bool Logout(HttpContext context)
