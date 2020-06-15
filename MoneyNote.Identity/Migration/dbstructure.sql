@@ -34,6 +34,7 @@ CREATE TABLE `cmsrelation` (
   `CreatedBy` varchar(36) COLLATE utf8mb4_bin DEFAULT NULL,
   `CreatedAt` datetime DEFAULT NULL,
   `UpdatedBy` varchar(36) COLLATE utf8mb4_bin DEFAULT NULL,
+  `UpdatedAt` datetime DEFAULT NULL,
   `CategoryId` varchar(36) COLLATE utf8mb4_bin DEFAULT NULL,
   `ContentId` varchar(36) COLLATE utf8mb4_bin DEFAULT NULL,
   PRIMARY KEY (`Id`)

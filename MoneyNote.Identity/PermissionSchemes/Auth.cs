@@ -37,7 +37,7 @@ namespace MoneyNote.Identity.PermissionSchemes
         public static void CreateOrUpdateSysModule(string code)
         {
             Task.Run(() =>
-            {
+            { 
                 if (string.IsNullOrEmpty(code)) return;
                 if (_sysModules.Any(i => i.Code == code)) return;
 

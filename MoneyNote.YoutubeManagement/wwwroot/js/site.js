@@ -117,6 +117,9 @@ var Category = {
             },
             controller: {
                 loadData: function (filter) {
+                    if (filter.parentId == null || filter.parentId == 'undefined') filter.parentId = App.guidEmpty();
+                    if (filter.categoryIds == null || filter.categoryIds == 'undefined') filter.categoryIds =[];
+
                     var defer = jQuery.Deferred();
                     jQuery.ajax({
                         method: "POST",
@@ -208,9 +211,210 @@ var Category = {
                         var parents = Category.findAllParent(item.id);
                         var text = '';
                         for (var i of parents) {
-                            text+='<small>'+i.title+'</small> /&nbsp;'
+                            text+='<small>'+i.title+'</small>/'
                         }
-                        return "<i>"+ text+"</i><br>" + item.title;
+                        return "<i>/"+ text+"</i><br>" + item.title;
+                    }
+                },
+                { type: "control" }
+            ]
+        });
+
+        /*,
+
+            onSelectRow: function (id) {
+                if (id && id !== Category._selectedRowId) {
+                    Category._$grid.restoreRow(Category._selectedRowId);
+                    Category._selectedRowId = id;
+                }
+                Category._$grid.editRow(id, true);
+            }*/
+    }
+}
+
+
+var Content = {
+    _$grid: null,
+    _data: [],
+    _listCategory: [],
+    _listRelation:[],
+    init: function ($grid) {
+        Content._$grid = $grid;
+
+        Content.loadGrid();
+    },
+    findCategoryIdRelationToConentId: function (id) {
+        var res = [];
+        for (var i of Content._listRelation) {
+            if (i.contentId == id) {
+                res.push(i.categoryId);
+            }
+        }
+        return res;
+    },
+    findCategoryByRelationIds: function (relationIds) {
+        var res = [];
+        for (var i of Content._listCategory) {
+            if (relationIds.includes(i.id)) {
+                res.push(i);
+            }
+        }
+        return res;
+    },
+    loadGrid: function () {
+        Content._$grid = Content._$grid.jsGrid({
+
+            height: "auto",
+            width: "100%",
+
+            heading: true,
+            filtering: true,
+            inserting: true,
+            editing: true,
+            selecting: true,
+            sorting: true,
+
+            paging: true,
+            pageLoading: true,
+            autoload: true,
+
+            pageSize: 10,
+            pageButtonCount: 5,
+            deleteConfirm: function (itm) {
+                return "The item: '" + itm.title + "' will be removed. Are you sure?";
+            },
+            rowClick: function (args) {
+                //showDetailsDialog("Edit", args.item);
+            },
+            controller: {
+                loadData: function (filter) {
+
+                    if (filter.parentId == null || filter.parentId == 'undefined') filter.parentId = App.guidEmpty();
+                    if (filter.categoryIds == null || filter.categoryIds == 'undefined') filter.categoryIds = [];
+
+                    var defer = jQuery.Deferred();
+                    jQuery.ajax({
+                        method: "POST",
+                        url: "/Content/SelectAll",
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(filter)
+                    }).done(function (msg) {
+
+                        var dataResult = {
+                            data: msg.data.data,
+                            itemsCount: msg.data.itemsCount
+                        };
+
+                        Content._listCategory = msg.data.listCategory;
+                        Content._listRelation = msg.data.listRelation;
+
+                        defer.resolve(dataResult);
+                    });
+
+                    return defer.promise();
+                },
+                insertItem: function (itm) {
+                    jQuery.ajax({
+                        method: "POST",
+                        url: "/Category/CreateOrUpdate",
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify({ title: itm.title, parentId: itm.parentId })
+                    }).done(function (msg) {
+                        if (msg.code == 0) {
+                            Category.loadData(function () {
+                                Category._$grid.jsGrid("search");
+                            });
+                        } else {
+                            alert(msg.message);
+                        }
+                    });
+                },
+                updateItem: function (itm) {
+                    jQuery.ajax({
+                        method: "POST",
+                        url: "/Category/CreateOrUpdate",
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify({
+                            title: itm.title,
+                            parentId: itm.parentId == null || itm.parentId == 'undefinded' ? App.guidEmpty() : itm.parentId,
+                            id: itm.id == null || itm.id == 'undefinded' ? App.guidEmpty() : itm.id
+                        })
+                    }).done(function (msg) {
+                        if (msg.code == 0) {
+                            Category.loadData(function () {
+                                Category._$grid.jsGrid("search");
+                            });
+                        } else {
+                            alert(msg.message);
+                        }
+                    });
+                },
+                deleteItem: function (itm) {
+                    jQuery.ajax({
+                        method: "POST",
+                        url: "/Category/Delete",
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify({ id: itm.id })
+                    }).done(function (msg) {
+                        if (msg.code == 0) {
+                            Category.loadData(function () {
+                                Category._$grid.jsGrid("search");
+                            });
+                        } else {
+                            alert(msg.message);
+                        }
+                    });
+                }
+            },
+            fields: [    
+                {
+                    headerTemplate: "Category", name: "id", type: "text", width: 150,
+                    itemTemplate: function (val, item) {
+                        var catIds = Content.findCategoryIdRelationToConentId(item.id);
+                        var cats = Content.findCategoryByRelationIds(catIds);
+                        var text = '';
+                        for (var i in cats) {
+                            text += "/" + i.title;
+                        }
+                        return text+"/";
+                    },
+                    editTemplate: function (val, item) {
+
+                    },
+                    editValue: function (val, item) {
+
+                    },
+                    insertTemplate: function (val, item) {
+
+                    },
+                    insertValue: function (val, item) {
+
+                    }
+                },
+                {
+                    headerTemplate: "Title", name: "title", type: "textarea", width: 150,
+                    itemTemplate: function (val, item) {
+                       return item.title;
+                    }
+                }, {
+                    headerTemplate: "UrlRef", name: "urlRef", type: "textarea", width: 150,
+                    itemTemplate: function (val, item) {
+                        return item.urlRef;
+                    }
+                }, {
+                    headerTemplate: "Description", name: "description", type: "textarea", width: 150,
+                    itemTemplate: function (val, item) {
+                        return item.description;
+                    }
+                },
+                {
+                    headerTemplate: "Thumbnail", name: "thumbnail", type: "textarea", width: 150,
+                    itemTemplate: function (val, item) {
+                        return item.description;
                     }
                 },
                 { type: "control" }
