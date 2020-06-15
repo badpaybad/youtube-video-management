@@ -240,8 +240,11 @@ var Content = {
     _listRelation:[],
     init: function ($grid) {
         Content._$grid = $grid;
-
-        Content.loadGrid();
+        Category.loadData(function () {
+            Content._listCategory = Category._data;
+            Content.loadGrid();
+        });
+        
     },
     findCategoryIdRelationToConentId: function (id) {
         var res = [];
@@ -315,59 +318,13 @@ var Content = {
                     return defer.promise();
                 },
                 insertItem: function (itm) {
-                    jQuery.ajax({
-                        method: "POST",
-                        url: "/Category/CreateOrUpdate",
-                        dataType: 'json',
-                        contentType: 'application/json; charset=utf-8',
-                        data: JSON.stringify({ title: itm.title, parentId: itm.parentId })
-                    }).done(function (msg) {
-                        if (msg.code == 0) {
-                            Category.loadData(function () {
-                                Category._$grid.jsGrid("search");
-                            });
-                        } else {
-                            alert(msg.message);
-                        }
-                    });
+                    
                 },
                 updateItem: function (itm) {
-                    jQuery.ajax({
-                        method: "POST",
-                        url: "/Category/CreateOrUpdate",
-                        dataType: 'json',
-                        contentType: 'application/json; charset=utf-8',
-                        data: JSON.stringify({
-                            title: itm.title,
-                            parentId: itm.parentId == null || itm.parentId == 'undefinded' ? App.guidEmpty() : itm.parentId,
-                            id: itm.id == null || itm.id == 'undefinded' ? App.guidEmpty() : itm.id
-                        })
-                    }).done(function (msg) {
-                        if (msg.code == 0) {
-                            Category.loadData(function () {
-                                Category._$grid.jsGrid("search");
-                            });
-                        } else {
-                            alert(msg.message);
-                        }
-                    });
+                    
                 },
                 deleteItem: function (itm) {
-                    jQuery.ajax({
-                        method: "POST",
-                        url: "/Category/Delete",
-                        dataType: 'json',
-                        contentType: 'application/json; charset=utf-8',
-                        data: JSON.stringify({ id: itm.id })
-                    }).done(function (msg) {
-                        if (msg.code == 0) {
-                            Category.loadData(function () {
-                                Category._$grid.jsGrid("search");
-                            });
-                        } else {
-                            alert(msg.message);
-                        }
-                    });
+                  
                 }
             },
             fields: [    
@@ -377,22 +334,52 @@ var Content = {
                         var catIds = Content.findCategoryIdRelationToConentId(item.id);
                         var cats = Content.findCategoryByRelationIds(catIds);
                         var text = '';
-                        for (var i in cats) {
+                        for (var i of cats) {
                             text += "/" + i.title;
                         }
                         return text+"/";
                     },
                     editTemplate: function (val, item) {
+                        var catIds = Content.findCategoryIdRelationToConentId(item.id);
 
+                        var text = '';
+                        
+                        for (var i of Content._listCategory) {
+                            var checked = catIds.includes(i.id) ? "checked" : "";
+                            var template = `<div class='form-check' id='editContent'>
+                                        <input class="form-check-input" value='${i.id}' ${checked} type="checkbox">
+                                        <label class="form-check-label">${i.title}</label>
+                                        </div>`;
+                            text += template;
+                        }
+                        
+                        return text;
                     },
                     editValue: function (val, item) {
-
+                        var res = [];
+                        $.each($("#editContent input:checked"), function () {
+                            res.push(jQuery(this).val());
+                        });
+                        return res;
                     },
                     insertTemplate: function (val, item) {
+                        var text = '';
+                        for (var i of Content._listCategory) {
+                            var template = `<div class='form-check' id='addContent'>
+                                        <input class="form-check-input" value='${i.id}' type="checkbox">
+                                        <label class="form-check-label">${i.title}</label>
+                                        </div>`;
+                            text += template;
+                        }
 
+                        return text;
                     },
                     insertValue: function (val, item) {
-
+                        var res = [];
+                        $.each($("#addContent input:checked"), function () {
+                            res.push(jQuery(this).val());
+                        });
+                        return res;
                     }
                 },
                 {
@@ -414,7 +401,7 @@ var Content = {
                 {
                     headerTemplate: "Thumbnail", name: "thumbnail", type: "textarea", width: 150,
                     itemTemplate: function (val, item) {
-                        return item.description;
+                        return item.thumbnail;
                     }
                 },
                 { type: "control" }
