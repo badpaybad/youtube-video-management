@@ -17,6 +17,9 @@ namespace MoneyNote.Identity.PermissionSchemes
 {
     public class Auth
     {
+        public const string LoginUrl= "/Login";
+        public const string LogoutUrl = "/Logout";
+
         static List<UserAlc> _userAlcs = new List<UserAlc>();
 
         static Dictionary<Guid, List<UserAlc>> _lookupUserAcls = new Dictionary<Guid, List<UserAlc>>();

@@ -41,7 +41,7 @@ namespace MoneyNote.Identity.PermissionSchemes
                 }
                 else
                 {
-                    context.Result = new RedirectResult("/Login");
+                    context.Result = new RedirectResult(Auth.LoginUrl);
                 }
             }
         }
