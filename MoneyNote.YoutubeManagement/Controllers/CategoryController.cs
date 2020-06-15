@@ -17,6 +17,16 @@ namespace MoneyNote.YoutubeManagement.Controllers
         {
             return View();
         }
+        public IActionResult SelectAll([FromBody] JsGridFilter filter)
+        {
+            using (var db = new MoneyNoteDbContext())
+            {
+                return Json(new AjaxResponse<List<CmsCategory>>
+                {
+                    data = db.CmsCategories.Where(i => i.IsDeleted == 0).ToList()
+                });
+            }
+        }
 
         public IActionResult CreateOrUpdate([FromBody] CmsCategory data)
         {
@@ -41,17 +51,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
             return Json(new AjaxResponse<CmsCategory> { data = data });
         }
 
-        public IActionResult SelectAll([FromBody] JsGridFilter filter)
-        {
-            using (var db = new MoneyNoteDbContext())
-            {
-                return Json(new AjaxResponse<List<CmsCategory>>
-                {
-                    data = db.CmsCategories.Where(i => i.IsDeleted == 0).ToList()
-                });
-            }
-        }
-
+      
         public IActionResult Delete([FromBody] CmsCategory data)
         {
             using (var db = new MoneyNoteDbContext())

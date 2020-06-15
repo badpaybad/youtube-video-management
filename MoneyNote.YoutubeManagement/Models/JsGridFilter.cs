@@ -8,8 +8,8 @@ namespace MoneyNote.YoutubeManagement.Models
 {
     public class JsGridFilter
     {
-        public int pageIndex { get; set; }
-        public int pageSize { get; set; }
+        public int pageIndex { get; set; } = 1;
+        public int pageSize { get; set; } = 10;
         public Guid? parentId { get; set; } = Guid.Empty;
         public string title { get; set; }
         public string thumbnail { get; set; }

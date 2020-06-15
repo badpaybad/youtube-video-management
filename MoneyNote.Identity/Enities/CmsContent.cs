@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MoneyNote.Identity.Enities
 {
@@ -11,5 +13,9 @@ namespace MoneyNote.Identity.Enities
         public string UrlRef { get; set; }
 
         public long CountView { get; set; }
+
+        [NotMapped]
+        public List<Guid>? CategoryIds { get; set; }
+
     }
 }

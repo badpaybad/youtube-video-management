@@ -21,12 +21,14 @@ namespace MoneyNote.YoutubeManagement.Controllers
 
         public IActionResult SelectAll([FromBody] JsGridFilter filter)
         {
+            filter = filter ?? new JsGridFilter();
+
             List<CmsContent> data = new List<CmsContent>();
             List<CmsCategory> listCategory = new List<CmsCategory>();
             List<CmsRelation> listRelation = new List<CmsRelation>();
             long itemsCount = 0;
             using (var db = new MoneyNoteDbContext())
-            {            
+            {
                 var query = db.CmsContents.AsQueryable();
                 if (!string.IsNullOrEmpty(filter.title))
                 {
@@ -74,6 +76,76 @@ namespace MoneyNote.YoutubeManagement.Controllers
             });
         }
 
+        public IActionResult CreateOrUpdate([FromBody] CmsContent data)
+        {
+            if (string.IsNullOrEmpty(data.Title)) return Json(new AjaxResponse<string> { code = 1, message = "Title can not be empty" });
+            if (data.Id == null || data.Id == Guid.Empty) data.Id = Guid.NewGuid();
 
+            using (var db = new MoneyNoteDbContext())
+            {
+                var exited = db.CmsContents.FirstOrDefault(i => i.Id == data.Id && i.IsDeleted == 0);
+                if (exited == null)
+                {
+                    db.CmsContents.Add(data);
+                }
+                else
+                {
+                    exited.ParentId = data.ParentId;
+                    exited.Title = data.Title;
+                    exited.Thumbnail = data.Thumbnail;
+                    exited.UrlRef = data.UrlRef;
+                    exited.Description = data.Description;
+                }
+
+                db.SaveChanges();
+           
+                var existed = db.CmsRelations.Where(i => i.ContentId == data.Id).ToList();
+                db.RemoveRange(existed);
+                db.SaveChanges();
+
+                db.AddRange(data.CategoryIds.Select(c => new CmsRelation
+                {
+                    ContentId = data.Id,
+                    CategoryId = c
+                }).ToList());
+                db.SaveChanges();
+            }
+
+            return Json(new AjaxResponse<CmsContent> { data = data });
+        }
+
+
+        public IActionResult Delete([FromBody] CmsContent data)
+        {
+            using (var db = new MoneyNoteDbContext())
+            {
+                data = db.CmsContents.FirstOrDefault(i => i.Id == data.Id && i.IsDeleted == 0);
+                if (data != null)
+                {
+                    data.IsDeleted = 1;
+                    db.SaveChanges();
+                }
+            }
+            return Json(new AjaxResponse<CmsContent> { data = data });
+        }
+
+        public IActionResult UpdateRelation([FromBody] ContentRelationModel data)
+        {
+            using (var db = new MoneyNoteDbContext())
+            {
+                var existed = db.CmsRelations.Where(i => i.ContentId == data.ContentId).ToList();
+                db.RemoveRange(existed);
+                db.SaveChanges();
+
+                db.AddRange(data.CategoryIds.Select(c => new CmsRelation
+                {
+                    ContentId = data.ContentId,
+                    CategoryId = c
+                }).ToList());
+                db.SaveChanges();
+            }
+
+            return Json(new AjaxResponse<ContentRelationModel> { data = data });
+        }
     }
 }
