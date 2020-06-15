@@ -33,14 +33,14 @@ namespace MoneyNote.YoutubeManagement.Controllers
             return View();
         }
 
-        [Route("/Login")]
+        [Route(Auth.LoginUrl)]
         public IActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
-        [Route("/Login")]
+        [Route(Auth.LoginUrl)]
         public IActionResult Login([FromBody] User user)
         {
             var ok = Auth.Login(user.Username, user.Password, HttpContext, out string token);
@@ -52,7 +52,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                 data = token
             });
         }
-        [Route("/Logout")]
+        [Route(Auth.LogoutUrl)]
         public IActionResult Logout()
         {
             Auth.Logout(HttpContext);
