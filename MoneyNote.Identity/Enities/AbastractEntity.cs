@@ -15,7 +15,7 @@ namespace MoneyNote.Identity.Enities
         public Guid ParentId { get; set; } = Guid.Empty;
         [Column(TypeName = "varchar(36)")]
         public Guid TenantId { get; set; } = Guid.Empty;
-        public bool IsDeleted { get; set; }
+        public int IsDeleted { get; set; }
         [Column(TypeName = "varchar(36)")]
         public Guid CreatedBy { get; set; } = Guid.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;

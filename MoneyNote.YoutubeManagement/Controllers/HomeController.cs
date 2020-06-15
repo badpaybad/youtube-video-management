@@ -47,7 +47,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
 
             return Json(new AjaxResponse<string>
             {
-                code = ok == true ? 1 : 0,
+                code = ok == true ? 0: 1,
                 message = ok == true ? "Loged" : "Wrong username or password",
                 data = token
             });

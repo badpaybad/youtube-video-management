@@ -16,8 +16,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- jsGrid -->
+    <link rel="stylesheet" href="/plugins/jsgrid/jsgrid.min.css">
+    <link rel="stylesheet" href="/plugins/jsgrid/jsgrid-theme.min.css">
+
     <!-- Theme style -->
     <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+
     @RenderSection("MetaHeader", false)
 </head>
 <body class="hold-transition sidebar-collapse layout-top-nav">
@@ -27,7 +32,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <partial name="_Navbar" model="layoutdata" />
         <!-- /.navbar -->
         <!-- Main Sidebar Container -->
-        <partial name="_MainSidebar"  model="layoutdata" />
+        <partial name="_MainSidebar" model="layoutdata" />
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
@@ -70,7 +75,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </div>
         <!-- /.content-wrapper -->
         <!-- Control Sidebar -->
-        <partial name="_ControlSidebar"  model="layoutdata" />
+        <partial name="_ControlSidebar" model="layoutdata" />
         <!-- /.control-sidebar -->
         <!-- Main Footer -->
         <footer class="main-footer">
@@ -90,6 +95,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
     <script src="/dist/js/adminlte.min.js"></script>
+
+    <!-- jsGrid -->
+    <script src="/plugins/jsgrid/demos/db.js"></script>
+    <script src="/plugins/jsgrid/jsgrid.min.js"></script>
+
     <script src="~/js/site.js"></script>
     @RenderSection("Scripts", false)
 </body>

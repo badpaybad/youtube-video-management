@@ -87,9 +87,9 @@ namespace MoneyNote.Identity.PermissionSchemes
 
                     try
                     {
-                        _userAlcs = db.UserAlcs.Where(i => i.IsDeleted == false).ToList();
-                        _sysModules = db.SysModules.Where(i => i.IsDeleted == false).ToList();
-                        _sysPermissions = db.SysPermissions.Where(i => i.IsDeleted == false).ToList();
+                        _userAlcs = db.UserAlcs.Where(i => i.IsDeleted == 0).ToList();
+                        _sysModules = db.SysModules.Where(i => i.IsDeleted == 0).ToList();
+                        _sysPermissions = db.SysPermissions.Where(i => i.IsDeleted == 0).ToList();
                     }
                     catch { }
 
@@ -217,7 +217,7 @@ namespace MoneyNote.Identity.PermissionSchemes
 
             if (!string.IsNullOrEmpty(token) && token.StartsWith(JwtBearerDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
             {
-                token = token.Substring(4).Trim();
+                token = token.Substring(6).Trim();
             }
 
             return token;
