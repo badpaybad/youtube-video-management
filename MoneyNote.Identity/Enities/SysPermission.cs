@@ -2,7 +2,7 @@
 
 namespace MoneyNote.Identity.Enities
 {
-    [Table("SysPermission")]
+    [Table("syspermission")]
     public class SysPermission : AbastractEntity
     {
         public string Code { get; set; }

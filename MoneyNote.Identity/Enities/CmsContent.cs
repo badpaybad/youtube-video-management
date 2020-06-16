@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MoneyNote.Identity.Enities
 {
-    [Table("CmsContent")]
+    [Table("cmscontent")]
     public class CmsContent : AbastractEntity
     {
         public string Title { get; set; }

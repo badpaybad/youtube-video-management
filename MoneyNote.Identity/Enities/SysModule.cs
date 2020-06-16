@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MoneyNote.Identity.Enities
 {
-    [Table("SysModule")]
+    [Table("sysmodule")]
     public class SysModule : AbastractEntity
     {
         public string Code { get; set; }

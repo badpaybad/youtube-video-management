@@ -2,7 +2,7 @@
 
 namespace MoneyNote.Identity.Enities
 {
-    [Table("CmsCategory")]
+    [Table("cmscategory")]
     public class CmsCategory: AbastractEntity
     {
         public string Title { get; set; }

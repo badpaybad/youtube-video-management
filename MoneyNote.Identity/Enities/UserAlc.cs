@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MoneyNote.Identity.Enities
 {
-    [Table("UserAcl")]
+    [Table("useracl")]
     public class UserAcl: AbastractEntity
     {
         [Column(TypeName ="varchar(36)")]   

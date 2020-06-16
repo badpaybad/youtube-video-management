@@ -7,7 +7,7 @@ using System.Text;
 
 namespace MoneyNote.Identity.Enities
 {
-    [Table("User")]
+    [Table("user")]
     public class User : AbastractEntity
     {
         public string Username { get; set; }
