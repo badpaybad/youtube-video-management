@@ -8,11 +8,12 @@ namespace MoneyNote.YoutubeManagement.Configs
 {
     public class Config
     {
-        public static string Domain = "moneynote.me";
-        
+        public static string Domain = string.Empty;
+        public static string Solgan = string.Empty;
         public static void Init(IConfiguration configuration)
         {
-
+            Domain = configuration["Domain"];
+            Domain = configuration["Solgan"];
         }
     }
 }

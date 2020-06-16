@@ -63,9 +63,6 @@ var Category = {
 
             Category._data = msg.data;
 
-            Category._data.unshift({ id: App.guidEmpty(), title: 'Find root only' });
-            Category._data.unshift({ id: -1, title: 'All' });
-
             if (funcCallback) {
                 funcCallback();
             }
@@ -476,25 +473,76 @@ var Content = {
                     headerTemplate: "Title", name: "title", type: "textarea", width: 150,
                     itemTemplate: function (val, item) {
                         return item.title;
+                    },
+                    insertTemplate: function () {
+                        return `<textarea id='contentTitle'></textarea>`;
+                    },
+                    insertValue: function () {
+                        return jQuery('#contentTitle').val();
                     }
-                }, {
+                },
+                {
                     headerTemplate: "UrlRef", name: "urlRef", type: "textarea", width: 150,
                     itemTemplate: function (val, item) {
                         return item.urlRef;
+                    },
+                    insertTemplate: function () {
+                        return `<textarea id='contentUrlRef'></textarea>`;
+                    },
+                    insertValue: function () {
+                        return jQuery('#contentUrlRef').val();
                     }
-                }, {
+                },
+                {
                     headerTemplate: "Description", name: "description", type: "textarea", width: 150,
                     itemTemplate: function (val, item) {
-                        return item.description;
+                        return `<textarea id='contentDescription' readonly >${item.description}</textarea>`;                        
+                    },
+                    insertTemplate: function () {
+                        return `<textarea id='contentDescription'></textarea>`;
+                    },
+                    insertValue: function () {
+                        return jQuery('#contentDescription').val();
                     }
                 },
                 {
                     headerTemplate: "Thumbnail", name: "thumbnail", type: "textarea", width: 150,
                     itemTemplate: function (val, item) {
                         return item.thumbnail;
+                    },
+                    insertTemplate: function () {
+                        return `<textarea id='contentThumbnail'></textarea>`;
+                    },
+                    insertValue: function () {
+                        return jQuery('#contentThumbnail').val();
                     }
                 },
-                { type: "control" }
+                {
+                    type: "control"
+                    ,
+                    insertTemplate: function () {
+                        var $result = jsGrid.fields.control.prototype.insertTemplate.apply(this, arguments);
+                        var $myButton = jQuery(`<a href='javascript:void(0)' title='youtube crawl' 
+                                    class='info-box-icon bg-warning'><span class='far fa-copy'> &nbsp;</span></a>`);
+                        $myButton.on('click', function () {
+
+                            var buttonClicked = jQuery(this).find('span');
+
+                            YoutuberCrawler.askUrl(function (data) {
+                                jQuery('#contentTitle').val(data.title);
+                                jQuery('#contentUrlRef').val(data.urlRef);
+                                jQuery('#contentDescription').val(data.description);
+                                jQuery('#contentThumbnail').val(data.thumbnail);
+
+                                jQuery(buttonClicked).attr('class', "far fa-copy");
+                            }, function () {
+                                    jQuery(buttonClicked).attr('class', "fas fa-2x fa-sync-alt fa-spin");
+                            });
+                        });
+                        $result = $result.add(jQuery('<hr>'));
+                        return $result.add($myButton);
+                    }
+                }
             ]
         });
 
@@ -627,7 +675,7 @@ var Admin = {
                             acls.push({
                                 userId: itm.id,
                                 moduleCode: arr[0],
-                                permissionCode:arr[1]
+                                permissionCode: arr[1]
                             });
                         }
                     }
@@ -786,11 +834,11 @@ var Admin = {
                     itemTemplate: function (val, item) {
                         return item.username;
                     },
-                     editTemplate: function (val, item) {
-                         return item.username + `<input type='hidden' id='username' value='${item.username}'>`;
+                    editTemplate: function (val, item) {
+                        return item.username + `<input type='hidden' id='username' value='${item.username}'>`;
                     },
-                     editValue: function (val, item) {
-                         return jQuery('#username').val();
+                    editValue: function (val, item) {
+                        return jQuery('#username').val();
                     }
                 }
                 ,
@@ -826,3 +874,26 @@ var Admin = {
     }
 }
 
+var YoutuberCrawler = {
+    askUrl: function (onSuccess, onBegin) {
+        var url = prompt("Enter your youtube url");
+        if (url != null && url != '') {
+
+            onBegin();
+
+            jQuery.ajax({
+                method: "POST",
+                url: "/Content/YoutubeCrawl",
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({ url: url })
+            }).done(function (msg) {
+                if (msg.code == 0) {
+                    onSuccess(msg.data);
+                } else {
+                    alert(msg.message);
+                }
+            });
+        }
+    }
+}

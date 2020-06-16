@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MoneyNote.Identity;
@@ -154,6 +155,52 @@ namespace MoneyNote.YoutubeManagement.Controllers
             }
 
             return Json(new AjaxResponse<ContentRelationModel> { data = data });
+        }
+
+        public IActionResult YoutubeCrawl([FromBody] YoutubeCrawlRequest request)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+
+                    httpClient.BaseAddress = new Uri("https://www.youtube.com/");
+
+                    var result = httpClient.GetStringAsync(request.url).GetAwaiter().GetResult();
+
+                    return Json(new AjaxResponse<CmsContent>
+                    {
+                        data = new CmsContent
+                        {
+                            Title = FindYoutubeContent(result, "<meta property=\"og:title\" content=\"", "\">"),
+                            Thumbnail = FindYoutubeContent(result, "<meta property=\"og:image\" content=\"", "\">"),
+                            UrlRef = FindYoutubeContent(result, "<meta property=\"og:url\" content=\"", "\">"),
+                            Description = FindYoutubeContent(result, "\\\"description\\\":{\\\"simpleText\\\":\\\"", "\\\"}"),
+                        }
+                    });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResponse<CmsContent>
+                {
+                    code = 1,
+                    message = ex.Message
+                });
+            }
+
+        }
+
+        string FindYoutubeContent(string src, string begin, string end)
+        {
+            var idx = src.IndexOf(begin);
+            if (idx < 0) return string.Empty;
+
+            var temp = src.Substring(idx + begin.Length);
+            idx = temp.IndexOf(end);
+
+            return temp.Substring(0, idx).Replace("\\\\n"," ").Replace("\\n", " ").Replace("\\\\", " ").Replace("\\", " ");
         }
     }
 }
