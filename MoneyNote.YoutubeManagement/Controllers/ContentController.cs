@@ -24,14 +24,14 @@ namespace MoneyNote.YoutubeManagement.Controllers
             filter = filter ?? new JsGridFilter();
             filter.categoryIds = filter.categoryIds ?? new List<Guid>();
             filter.categoryIds.Where(i => i != null && i != Guid.Empty).ToList();
-
-            List<CmsContent> data = new List<CmsContent>();
-            List<CmsCategory> listCategory = new List<CmsCategory>();
-            List<CmsRelation> listRelation = new List<CmsRelation>();
             long itemsCount = 0;
+            List<CmsContent> data = new List<CmsContent>();
+            //List<CmsCategory> listCategory = new List<CmsCategory>();
+            List<CmsRelation.Dto> listRelation = new List<CmsRelation.Dto>();
+
             using (var db = new MoneyNoteDbContext())
             {
-                var query = db.CmsContents.Where(i=>i.IsDeleted==0);
+                var query = db.CmsContents.Where(i => i.IsDeleted == 0);
                 if (!string.IsNullOrEmpty(filter.title))
                 {
                     query = query.Where(i => i.Title.Contains(filter.title));
@@ -50,7 +50,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                         .Where(m => filter.categoryIds.Contains(m.r.CategoryId))
                         .Select(m => m.c);
                 }
-                if(filter.findRootItem!=null && filter.findRootItem == true)
+                if (filter.findRootItem != null && filter.findRootItem == true)
                 {
                     query = query.Where(i => i.ParentId == null || i.ParentId == Guid.Empty);
                 }
@@ -64,15 +64,17 @@ namespace MoneyNote.YoutubeManagement.Controllers
                 var contentIds = data.Select(i => i.Id).ToList();
                 if (contentIds.Count > 0)
                 {
-                    listRelation = db.CmsRelations.Where(i => contentIds.Contains(i.ContentId)).ToList();
+                    listRelation = db.CmsRelations.Where(i => contentIds.Contains(i.ContentId))
+                        .Select(i => new CmsRelation.Dto { CategoryId = i.CategoryId, ContentId = i.ContentId })
+                        .ToList();
                 }
 
                 //cbeadc96-a21a-4ab8-a69b-8a56c893ffce
             }
 
-            return Json(new AjaxResponse<JsGridResult<CmsContent>>
+            return Json(new AjaxResponse<ContentJsGridResult>
             {
-                data = new JsGridResult<CmsContent>
+                data = new ContentJsGridResult
                 {
                     data = data,
                     itemsCount = itemsCount,
@@ -104,7 +106,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                 }
 
                 db.SaveChanges();
-           
+
                 var existed = db.CmsRelations.Where(i => i.ContentId == data.Id).ToList();
                 db.RemoveRange(existed);
                 db.SaveChanges();

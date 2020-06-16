@@ -8,13 +8,18 @@ using System.Text;
 namespace MoneyNote.Identity.Enities
 {
     [Table("User")]
-    public  class User: AbastractEntity
-    {       
+    public class User : AbastractEntity
+    {
         public string Username { get; set; }
         public string Password { get; set; }
-        public DateTime? LastLogedin { get; set; }  
-        
+        public DateTime? LastLogedin { get; set; }
+
         public string LastToken { get; set; }
+
+        [NotMapped]
+        public List<UserAcl.Dto>? Acls { get; set; } = new List<UserAcl.Dto>();
+
+     
     }
 
 }

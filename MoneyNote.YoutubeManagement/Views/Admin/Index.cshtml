@@ -1,1 +1,18 @@
-﻿
+﻿<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">User</h3>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <div id="jsGridAdmin"></div>
+    </div>
+    <!-- /.card-body -->
+</div>
+<!-- /.card -->
+
+@section Scripts{
+    <script>
+        Admin.init(jQuery('#jsGridAdmin'));
+    </script>
+
+}

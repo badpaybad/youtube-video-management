@@ -12,7 +12,7 @@ namespace MoneyNote.Identity
         }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<UserAlc> UserAlcs { get; set; }
+        public DbSet<UserAcl> UserAcls { get; set; }
         public DbSet<SysModule> SysModules { get; set; }
         public DbSet<SysPermission> SysPermissions { get; set; }
 

@@ -20,9 +20,9 @@ namespace MoneyNote.Identity.PermissionSchemes
         public const string LoginUrl= "/Login";
         public const string LogoutUrl = "/Logout";
 
-        static List<UserAlc> _userAlcs = new List<UserAlc>();
+        static List<UserAcl> _userAlcs = new List<UserAcl>();
 
-        static Dictionary<Guid, List<UserAlc>> _lookupUserAcls = new Dictionary<Guid, List<UserAlc>>();
+        static Dictionary<Guid, List<UserAcl>> _lookupUserAcls = new Dictionary<Guid, List<UserAcl>>();
 
         static List<SysModule> _sysModules = new List<SysModule>();
 
@@ -90,7 +90,7 @@ namespace MoneyNote.Identity.PermissionSchemes
 
                     try
                     {
-                        _userAlcs = db.UserAlcs.Where(i => i.IsDeleted == 0).ToList();
+                        _userAlcs = db.UserAcls.Where(i => i.IsDeleted == 0).ToList();
                         _sysModules = db.SysModules.Where(i => i.IsDeleted == 0).ToList();
                         _sysPermissions = db.SysPermissions.Where(i => i.IsDeleted == 0).ToList();
                     }
@@ -154,7 +154,7 @@ namespace MoneyNote.Identity.PermissionSchemes
             }
             else
             {
-                if (_lookupUserAcls.TryGetValue(user.Id, out List<UserAlc> userAcls) && userAcls != null && userAcls.Count > 0)
+                if (_lookupUserAcls.TryGetValue(user.Id, out List<UserAcl> userAcls) && userAcls != null && userAcls.Count > 0)
                 {
                     MemoryMessageBus.Instance.CacheSet($"{token}_module", userAcls.Select(i => i.ModuleCode).Distinct().ToList());
                     MemoryMessageBus.Instance.CacheSet($"{token}_permission", userAcls.Select(i => i.PermissionCode).Distinct().ToList());
@@ -277,7 +277,7 @@ namespace MoneyNote.Identity.PermissionSchemes
 
             //TODO: check module code with user loged compare to codes 
 
-            if (_lookupUserAcls.TryGetValue(user.Id, out List<UserAlc> userAcls) && userAcls != null && userAcls.Count > 0)
+            if (_lookupUserAcls.TryGetValue(user.Id, out List<UserAcl> userAcls) && userAcls != null && userAcls.Count > 0)
             {
                 if (userAcls.Any(i => i.ModuleCode == moduleCode) && userAcls.Any(i => i.PermissionCode == permissionCode))
                 {

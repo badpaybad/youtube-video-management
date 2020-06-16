@@ -18,15 +18,33 @@ namespace MoneyNote.YoutubeManagement.Models
 
         public List<Guid>? categoryIds { get; set; } = new List<Guid>();
         public bool? findRootItem { get; set; }
+
+        public string moduleCode { get; set; }
+        public string permissionCode { get; set; }
         
     }
-
-    public class JsGridResult<T>
+    public interface IJsGridResult<T>
     {
         public List<T> data { get; set; }
         public long itemsCount { get; set; }
+    }
+
+    public class ContentJsGridResult: IJsGridResult<CmsContent>
+    {
+        public List<CmsContent> data { get; set; }
+        public long itemsCount { get; set; }
 
         //public List<CmsCategory> listCategory { get; set; }
-        public List<CmsRelation> listRelation { get; set; }
+        public List<CmsRelation.Dto> listRelation { get; set; }
     }
+
+    public class UserJsGridResult : IJsGridResult<User>
+    {
+        public List<User> data { get; set; }
+        public long itemsCount { get; set; }
+
+        //public List<CmsCategory> listCategory { get; set; }
+        public List<UserAcl.Dto> ListUserAcl { get; set; }
+    }
+
 }

@@ -11,5 +11,11 @@ namespace MoneyNote.Identity.Enities
 
         [Column(TypeName = "varchar(36)")]
         public Guid ContentId { get; set; } = Guid.Empty;
+
+        public class Dto
+        {
+            public Guid CategoryId { get; set; }
+            public Guid ContentId { get; set; }
+        }
     }
 }
