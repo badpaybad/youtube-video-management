@@ -515,7 +515,7 @@ var Admin = {
     _data: [],
     _listModule: [],
     _listPermission: [],
-    _listAcl: [],
+    _listUserAcl: [],
     init: function ($grid) {
         Admin._$grid = $grid;
         Admin.loadData(function () {
@@ -550,7 +550,7 @@ var Admin = {
     ,
     findAclByUserId: function (userId) {
         var res = [];
-        for (var i of Admin._listAcl) {
+        for (var i of Admin._listUserAcl) {
             if (i.userId == userId) {
                 res.push(i);
             }
@@ -609,9 +609,9 @@ var Admin = {
                             itemsCount: msg.data.itemsCount
                         };
 
-                        Admin._listAcl = msg.data.listAcl;
-                        if (Admin._listAcl == null || Admin._listAcl == 'undefined') {
-                            Admin._listAcl = [];
+                        Admin._listUserAcl = msg.data.listUserAcl;
+                        if (Admin._listUserAcl == null || Admin._listUserAcl == 'undefined') {
+                            Admin._listUserAcl = [];
                         }
 
                         defer.resolve(dataResult);
@@ -722,7 +722,7 @@ var Admin = {
                         var text = '';
 
                         for (var i of Admin._listPermission) {
-                            var checked = acls.includes(i.moduleCode + "/" + i.code) ? "checked" : "";
+                            var checked = tempAcls.includes(i.moduleCode + "/" + i.code) ? "checked" : "";
 
                             var template = `<div class='form-check' id='editUser'>
                                         <input class="form-check-input" value='${i.moduleCode}/${i.code}' ${checked} type="checkbox">
@@ -785,6 +785,12 @@ var Admin = {
                     headerTemplate: "Username", name: "username", type: "text", width: 150,
                     itemTemplate: function (val, item) {
                         return item.username;
+                    },
+                     editTemplate: function (val, item) {
+                         return item.username + `<input type='hidden' id='username' value='${item.username}'>`;
+                    },
+                     editValue: function (val, item) {
+                         return jQuery('#username').val();
                     }
                 }
                 ,
@@ -794,7 +800,7 @@ var Admin = {
                         return "***";
                     },
                     editTemplate: function (val, item) {
-                        return `<input type='text' id='password' placeholder='leave empty to no change password'>`
+                        return `<input type='text' id='password' placeholder='leave empty to no change password'>`;
                     }
                     ,
                     editValue: function (val, item) {
