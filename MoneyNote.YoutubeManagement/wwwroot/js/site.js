@@ -535,9 +535,32 @@ var Content = {
                                 jQuery('#contentThumbnail').val(data.thumbnail);
 
                                 jQuery(buttonClicked).attr('class', "far fa-copy");
+
                             }, function () {
                                     jQuery(buttonClicked).attr('class', "fas fa-2x fa-sync-alt fa-spin");
                             });
+                        });
+                        $result = $result.add(jQuery('<hr>'));
+                        return $result.add($myButton);
+                    },
+                    headerTemplate: function () {
+                        var $result = jsGrid.fields.control.prototype.headerTemplate.apply(this, arguments);
+                        var $myButton = jQuery(`<a href='javascript:void(0)' title='youtube crawl' 
+                                    class='info-box-icon bg-warning'><span class='far fa-copy'>Crawl</span></a>`);
+                        $myButton.on('click', function () {
+
+                            var buttonClicked = jQuery(this).find('span');
+
+                            YoutuberCrawler.askUrl(function (data) {
+
+                                Content._$grid.jsGrid("search");
+
+                                jQuery(buttonClicked).attr('class', "far fa-copy");
+
+
+                            }, function () {
+                                jQuery(buttonClicked).attr('class', "fas fa-2x fa-sync-alt fa-spin");
+                            }, true);
                         });
                         $result = $result.add(jQuery('<hr>'));
                         return $result.add($myButton);
@@ -875,10 +898,10 @@ var Admin = {
 }
 
 var YoutuberCrawler = {
-    askUrl: function (onSuccess, onBegin) {
+    askUrl: function (onSuccess, onBegin, autoSave) {
         var url = prompt("Enter your youtube url");
         if (url != null && url != '') {
-
+            if (!autoSave) autoSave = false;
             onBegin();
 
             jQuery.ajax({
@@ -886,7 +909,7 @@ var YoutuberCrawler = {
                 url: "/Content/YoutubeCrawl",
                 dataType: 'json',
                 contentType: 'application/json; charset=utf-8',
-                data: JSON.stringify({ url: url })
+                data: JSON.stringify({ url: url, autoSave:autoSave })
             }).done(function (msg) {
                 if (msg.code == 0) {
                     onSuccess(msg.data);

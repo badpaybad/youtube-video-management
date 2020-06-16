@@ -168,15 +168,26 @@ namespace MoneyNote.YoutubeManagement.Controllers
 
                     var result = httpClient.GetStringAsync(request.url).GetAwaiter().GetResult();
 
-                    return Json(new AjaxResponse<CmsContent>
+                    CmsContent cmsContent = new CmsContent
                     {
-                        data = new CmsContent
+                        Title = FindYoutubeContent(result, "<meta property=\"og:title\" content=\"", "\">"),
+                        Thumbnail = FindYoutubeContent(result, "<meta property=\"og:image\" content=\"", "\">"),
+                        UrlRef = FindYoutubeContent(result, "<meta property=\"og:url\" content=\"", "\">"),
+                        Description = FindYoutubeContent(result, "\\\"description\\\":{\\\"simpleText\\\":\\\"", "\\\"}"),
+                    };
+
+                    if (request.autoSave)
+                    {
+                        using (var db = new MoneyNoteDbContext())
                         {
-                            Title = FindYoutubeContent(result, "<meta property=\"og:title\" content=\"", "\">"),
-                            Thumbnail = FindYoutubeContent(result, "<meta property=\"og:image\" content=\"", "\">"),
-                            UrlRef = FindYoutubeContent(result, "<meta property=\"og:url\" content=\"", "\">"),
-                            Description = FindYoutubeContent(result, "\\\"description\\\":{\\\"simpleText\\\":\\\"", "\\\"}"),
+                            db.CmsContents.Add(cmsContent);
+                            db.SaveChanges();
                         }
+                    }
+
+                    return base.Json(new AjaxResponse<CmsContent>
+                    {
+                        data = cmsContent
                     });
                 }
 
