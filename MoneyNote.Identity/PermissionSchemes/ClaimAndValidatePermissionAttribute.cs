@@ -35,13 +35,16 @@ namespace MoneyNote.Identity.PermissionSchemes
 
             if (httpStatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                if (_isApi)
+                if (!_isApi
+                    && ( context.HttpContext.Request.Headers.ContainsKey("RequestSourceType") == false
+                    || ((string)context.HttpContext.Request.Headers["RequestSourceType"]) == ""
+                    || ((string)context.HttpContext.Request.Headers["RequestSourceType"]) == "web"))
                 {
-                    context.Result = new UnauthorizedResult();
+                    context.Result = new RedirectResult(Auth.LoginUrl);
                 }
                 else
                 {
-                    context.Result = new RedirectResult(Auth.LoginUrl);
+                    context.Result = new UnauthorizedResult();
                 }
             }
         }

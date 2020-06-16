@@ -17,6 +17,8 @@ namespace MoneyNote.YoutubeManagement.Models
         public string urlRef { get; set; }
 
         public List<Guid>? categoryIds { get; set; } = new List<Guid>();
+        public bool? findRootItem { get; set; }
+        
     }
 
     public class JsGridResult<T>
@@ -24,7 +26,7 @@ namespace MoneyNote.YoutubeManagement.Models
         public List<T> data { get; set; }
         public long itemsCount { get; set; }
 
-        public List<CmsCategory> listCategory { get; set; }
+        //public List<CmsCategory> listCategory { get; set; }
         public List<CmsRelation> listRelation { get; set; }
     }
 }

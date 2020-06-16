@@ -203,25 +203,27 @@ namespace MoneyNote.Identity.PermissionSchemes
 
         public static string GetToken(HttpContext context)
         {
-            var token = context.Request.Headers["Authorization"].ToString();
-
+            var token = string.Empty;
             if (string.IsNullOrEmpty(token))
             {
-                if (context.Session.TryGetValue("__CurrentUserToken", out byte[] utoken))
-                {
-                    if (utoken != null)
-                    {
-                        token = UTF8Encoding.UTF8.GetString(utoken);
-                    }
-                }
-            }
+                token = context.Request.Headers["Authorization"].ToString();
 
+            }
+            if (context.Session.TryGetValue("__CurrentUserToken", out byte[] utoken))
+            {
+                if (utoken != null)
+                {                   
+                    token = UTF8Encoding.UTF8.GetString(utoken);
+                }
+            }          
+           
             //you may want check cookies if you do you own code to save token to cookies
 
             if (!string.IsNullOrEmpty(token) && token.StartsWith(JwtBearerDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
             {
                 token = token.Substring(6).Trim();
             }
+
 
             return token;
         }

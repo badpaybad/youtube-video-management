@@ -63,7 +63,8 @@ var Category = {
 
             Category._data = msg.data;
 
-            Category._data.unshift(App.guidEmpty());
+            Category._data.unshift({ id: App.guidEmpty(), title: 'Find root only' });
+            Category._data.unshift({ id: -1 , title: 'All' });
 
             if (funcCallback) {
                 funcCallback();
@@ -121,6 +122,12 @@ var Category = {
                 loadData: function (filter) {
                     if (filter.parentId == null || filter.parentId == 'undefined') filter.parentId = App.guidEmpty();
                     if (filter.categoryIds == null || filter.categoryIds == 'undefined') filter.categoryIds = [];
+                    if (filter.categoryIds.includes(-1)) {
+                        filter.categoryIds = [];
+                    }
+                    if (filter.categoryIds.includes(App.guidEmpty())) {
+                        filter.findRootItem = true;
+                    }
 
                     var defer = jQuery.Deferred();
                     jQuery.ajax({
@@ -300,6 +307,14 @@ var Content = {
 
                     if (filter.parentId == null || filter.parentId == 'undefined') filter.parentId = App.guidEmpty();
                     if (filter.categoryIds == null || filter.categoryIds == 'undefined') filter.categoryIds = [];
+                    if (filter.parentId == null || filter.parentId == 'undefined') filter.parentId = App.guidEmpty();
+                    if (filter.categoryIds == null || filter.categoryIds == 'undefined') filter.categoryIds = [];
+                    if (filter.categoryIds.includes(-1)) {
+                        filter.categoryIds = [];
+                    }
+                    if (filter.categoryIds.includes(App.guidEmpty())) {
+                        filter.findRootItem = true;
+                    }
 
                     var defer = jQuery.Deferred();
                     jQuery.ajax({
@@ -315,7 +330,7 @@ var Content = {
                             itemsCount: msg.data.itemsCount
                         };
 
-                        Content._listCategory = msg.data.listCategory;
+                        //Content._listCategory = msg.data.listCategory;
                         Content._listRelation = msg.data.listRelation;
 
                         defer.resolve(dataResult);

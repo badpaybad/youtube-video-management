@@ -19,11 +19,24 @@ namespace MoneyNote.YoutubeManagement.Controllers
         }
         public IActionResult SelectAll([FromBody] JsGridFilter filter)
         {
+            filter = filter ?? new JsGridFilter();
+            filter.categoryIds = filter.categoryIds ?? new List<Guid>();
+            filter.categoryIds.Where(i => i != null && i != Guid.Empty).ToList();
+
             using (var db = new MoneyNoteDbContext())
             {
-                return Json(new AjaxResponse<List<CmsCategory>>
+                var query = db.CmsCategories.Where(i => i.IsDeleted == 0);
+                if (!string.IsNullOrEmpty(filter.title))
                 {
-                    data = db.CmsCategories.Where(i => i.IsDeleted == 0).ToList()
+                    query = query.Where(i => i.Title.Contains(filter.title));
+                }
+                if (filter.findRootItem != null && filter.findRootItem == true)
+                {
+                    query = query.Where(i => i.ParentId == null || i.ParentId == Guid.Empty);
+                }
+                return Json(new AjaxResponse<List<CmsCategory>>
+                {                    
+                    data = query.ToList()
                 });
             }
         }
