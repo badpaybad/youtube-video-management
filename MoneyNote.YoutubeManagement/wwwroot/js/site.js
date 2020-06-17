@@ -63,6 +63,8 @@ var Category = {
 
             Category._data = msg.data;
 
+            Category._data.unshift({ id: App.guidEmpty(),title:'Root' })
+
             if (funcCallback) {
                 funcCallback();
             }
@@ -140,7 +142,12 @@ var Category = {
                             itemsCount: msg.data.length
                         };
 
+                        Category._data = msg.data;
+
+                        Category._data.unshift({ id: App.guidEmpty(), title: 'Root' })
+
                         defer.resolve(dataResult);
+
                     });
 
                     return defer.promise();
@@ -153,7 +160,8 @@ var Category = {
                         contentType: 'application/json; charset=utf-8',
                         data: JSON.stringify({
                             title: itm.title,
-                            parentId: itm.parentId == null || itm.parentId == 'undefinded' ? App.guidEmpty() : itm.parentId
+                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0? App.guidEmpty() : itm.parentId,
+                            id: itm.id == null || itm.id == 'undefinded' ? App.guidEmpty() : itm.id
                         })
                     }).done(function (msg) {
                         if (msg.code == 0) {
@@ -173,7 +181,7 @@ var Category = {
                         contentType: 'application/json; charset=utf-8',
                         data: JSON.stringify({
                             title: itm.title,
-                            parentId: itm.parentId == null || itm.parentId == 'undefinded' ? App.guidEmpty() : itm.parentId,
+                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0? App.guidEmpty() : itm.parentId,
                             id: itm.id == null || itm.id == 'undefinded' ? App.guidEmpty() : itm.id
                         })
                     }).done(function (msg) {
@@ -346,7 +354,8 @@ var Content = {
                             thumbnail: itm.thumbnail,
                             description: itm.description,
                             categoryIds: itm.categoryIds,
-                            parentId: itm.parentId == null || itm.parentId == 'undefinded' ? App.guidEmpty() : itm.parentId
+                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0? App.guidEmpty() : itm.parentId,
+                            id: itm.id == null || itm.id == 'undefinded' ? App.guidEmpty() : itm.id
                         })
                     }).done(function (msg) {
                         if (msg.code == 0) {
@@ -368,7 +377,7 @@ var Content = {
                             thumbnail: itm.thumbnail,
                             description: itm.description,
                             categoryIds: itm.categoryIds,
-                            parentId: itm.parentId == null || itm.parentId == 'undefinded' ? App.guidEmpty() : itm.parentId,
+                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0? App.guidEmpty() : itm.parentId,
                             id: itm.id == null || itm.id == 'undefinded' ? App.guidEmpty() : itm.id
                         })
                     }).done(function (msg) {
@@ -709,10 +718,11 @@ var Admin = {
                         dataType: 'json',
                         contentType: 'application/json; charset=utf-8',
                         data: JSON.stringify({
-                            parentId: itm.parentId == null || itm.parentId == 'undefinded' ? App.guidEmpty() : itm.parentId,
+                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId ==0 ? App.guidEmpty() : itm.parentId,
                             username: itm.username,
                             password: itm.password,
-                            acls: acls
+                            acls: acls,
+                            id: itm.id == null || itm.id == 'undefinded' ? App.guidEmpty() : itm.id
                         })
                     }).done(function (msg) {
                         if (msg.code == 0) {
@@ -743,7 +753,7 @@ var Admin = {
                             username: itm.username,
                             password: itm.password,
                             acls: acls,
-                            parentId: itm.parentId == null || itm.parentId == 'undefinded' ? App.guidEmpty() : itm.parentId,
+                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0 ? App.guidEmpty() : itm.parentId,
                             id: itm.id == null || itm.id == 'undefinded' ? App.guidEmpty() : itm.id
                         })
                     }).done(function (msg) {
