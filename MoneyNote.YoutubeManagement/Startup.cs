@@ -38,10 +38,7 @@ namespace MoneyNote.YoutubeManagement
                 options.Cookie.IsEssential = true;
             });
 
-            //services.AddAuthentication(options => {
-            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            //});
+            services.AddSwaggerGen();
 
             services.AddControllersWithViews();
 
@@ -68,32 +65,37 @@ namespace MoneyNote.YoutubeManagement
                 builder.WithExposedHeaders("Content-Disposition");
             });
 
+
             app.UseSession();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
+
             app.UseStaticFiles();
 
-            app.UseRouting();
 
             Auth.InitSupperAdmin();
 
             //app.UseAuthentication();
             //app.UseAuthorization();
 
-            app.UseMiddleware<IdentityMiddleware>();
+            //app.UseMiddleware<IdentityMiddleware>();
 
-            app.UseEndpoints(endpoints =>
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
             {
-          //      endpoints.MapAreaControllerRoute(
-          //"Admin",
-          //"Admin",
-          //"Admin/{controller=Home}/{action=Index}/{id?}");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", $"API docs");
 
+            });
+
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {         
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");           
-
+               
             });
+
         }
     }
 }
