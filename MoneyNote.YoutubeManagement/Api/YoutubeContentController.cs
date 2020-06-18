@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MoneyNote.Identity;
 using MoneyNote.Identity.Enities;
+using MoneyNote.Identity.PermissionSchemes;
 using MoneyNote.YoutubeManagement.Models;
 using MoneyNote.YoutubeManagement.Repository;
 
@@ -13,8 +14,10 @@ namespace MoneyNote.YoutubeManagement.Api
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ClaimAndValidatePermission("*", "ApiYoutubeContent", true)]
     public class YoutubeContentController : ControllerBase
     {
+        [Route("ListCategory")]
         public AjaxResponse<List<CmsCategory>> ListCategory(JsGridFilter filter)
         {
             filter = filter ?? new JsGridFilter();
@@ -26,7 +29,7 @@ namespace MoneyNote.YoutubeManagement.Api
                 data = new YoutubeContentRepository().ListCategory(filter).data
             };
         }
-
+        [Route("ListContent")]
         public AjaxResponse<ContentJsGridResult> ListContent(JsGridFilter filter)
         {
 
@@ -35,7 +38,7 @@ namespace MoneyNote.YoutubeManagement.Api
                 data = new YoutubeContentRepository().ListContent(filter)
             };
         }
-
+        [Route("GetContent")]
         public AjaxResponse<CmsContent> GetContent(ContentRequest request)
         {
             using (var db = new MoneyNoteDbContext())

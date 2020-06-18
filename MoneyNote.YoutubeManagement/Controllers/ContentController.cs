@@ -20,7 +20,6 @@ namespace MoneyNote.YoutubeManagement.Controllers
         {
             return View();
         }
-
         public IActionResult SelectAll([FromBody] JsGridFilter filter)
         {
           
