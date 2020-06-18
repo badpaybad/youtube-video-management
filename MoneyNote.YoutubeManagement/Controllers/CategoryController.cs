@@ -12,14 +12,14 @@ using MoneyNote.YoutubeManagement.Repository;
 namespace MoneyNote.YoutubeManagement.Controllers
 {
     [ClaimAndValidatePermission("*", "CmsCategory")]
-    
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class CategoryController : Controller
     {
         public IActionResult Index()
         {
             return View();
         }
-        //[ApiExplorerSettings(GroupName = "Category")]
+        
         public IActionResult SelectAll([FromBody] JsGridFilter filter)
         {
             return Json(new AjaxResponse<List<CmsCategory>>

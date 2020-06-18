@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using MoneyNote.Identity.Middleware;
 using MoneyNote.Identity.PermissionSchemes;
 using MoneyNote.YoutubeManagement.Configs;
@@ -38,7 +39,10 @@ namespace MoneyNote.YoutubeManagement
                 options.Cookie.IsEssential = true;
             });
 
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+            });
 
             services.AddControllersWithViews();
             services.AddControllers();
@@ -74,12 +78,7 @@ namespace MoneyNote.YoutubeManagement
 
 
             Auth.InitSupperAdmin();
-
-            //app.UseAuthentication();
-            //app.UseAuthorization();
-
-            //app.UseMiddleware<IdentityMiddleware>();
-
+           
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {

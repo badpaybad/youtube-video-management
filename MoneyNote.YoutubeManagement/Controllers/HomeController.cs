@@ -14,6 +14,7 @@ using MoneyNote.YoutubeManagement.Models;
 namespace MoneyNote.YoutubeManagement.Controllers
 {
     [AllowAnonymous]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

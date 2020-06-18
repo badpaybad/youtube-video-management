@@ -14,6 +14,7 @@ using MoneyNote.YoutubeManagement.Repository;
 namespace MoneyNote.YoutubeManagement.Controllers
 {
     [ClaimAndValidatePermission("*", "CmsContent")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class ContentController : Controller
     {
         public IActionResult Index()

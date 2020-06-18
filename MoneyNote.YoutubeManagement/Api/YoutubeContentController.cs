@@ -15,6 +15,7 @@ namespace MoneyNote.YoutubeManagement.Api
     [Route("api/[controller]")]
     [ApiController]
     [ClaimAndValidatePermission("*", "ApiYoutubeContent", true)]
+    [ApiExplorerSettings(IgnoreApi = false)]
     public class YoutubeContentController : ControllerBase
     {
         [Route("ListCategory")]

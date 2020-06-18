@@ -12,6 +12,7 @@ using MoneyNote.YoutubeManagement.Models;
 namespace MoneyNote.YoutubeManagement.Controllers
 {
     [ClaimAndValidatePermission("*", "AdminDashboard")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class AdminController : Controller
     {
         public IActionResult Index()
