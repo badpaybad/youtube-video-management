@@ -9,27 +9,26 @@ namespace MoneyNote.UnitTest
 {
     class Program
     {
-        static ConcurrentDictionary<string, Task<string>> _cache = new ConcurrentDictionary<string, Task<string>>();
+        static ConcurrentDictionary<string, string> _cache = new ConcurrentDictionary<string, string>();
         static ConcurrentDictionary<string, bool> _cacheIsRunning = new ConcurrentDictionary<string, bool>();
         static ConcurrentDictionary<string, bool> _cacheIsDone = new ConcurrentDictionary<string, bool>();
         static List<string> result = new List<string>();
-        static  void  Main(string[] args)
+        static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
             //https://github.com/dotnet/runtime/issues/24293
             //https://codereview.stackexchange.com/questions/27507/is-this-code-thread-safe-singleton-implementation-using-concurrent-dictionary
             Stopwatch sw = Stopwatch.StartNew();
 
-            Parallel.For(0, 10,  (i) =>
-            {
-                string value = $"begin_{i}_{DateTime.Now.Ticks}";
-                Console.WriteLine(value);
-                var x = _cache.GetOrAdd("test", BuildCache("test", i));
-                var xr =  x.GetAwaiter().GetResult();
-                result.Add($"{i}_Result_{xr}");
-            });
+            Parallel.For(0, 10, (i) =>
+           {
+               string value = $"begin_{i}_{DateTime.Now.Ticks}";
+               Console.WriteLine(value);
+               var xr = BuildCache("test", i);
+               result.Add($"{i}_Result_{xr}");
+           });
 
-            foreach(var r in result)
+            foreach (var r in result)
             {
                 Console.WriteLine(r);
             }
@@ -39,27 +38,38 @@ namespace MoneyNote.UnitTest
             Console.ReadLine();
         }
 
-        public static async Task<string> BuildCache(string key,int i)
+        public static string BuildCache(string key, int i)
         {
-            while(_cacheIsRunning.TryGetValue(key,out bool isRunning) && isRunning)
+            while (true)
             {
-                if(_cacheIsDone.TryGetValue(key,out bool isDone) && isDone)
+                if (_cacheIsDone.TryGetValue(key, out bool isDone) && isDone)
                 {
-                    _cache.TryGetValue(key, out Task<string> valCached); return await valCached;
+                    if (_cache.TryGetValue(key, out string cached) && string.IsNullOrEmpty(cached) == false) return cached;
                 }
-                await Task.Delay(1);
+
+                if (_cacheIsRunning.TryGetValue(key, out bool isRunning) && isRunning)
+                {
+                    if (_cacheIsDone.TryGetValue(key, out bool isDoneRecheck) && isDoneRecheck)
+                    {
+                        if (_cache.TryGetValue(key, out string cached) && string.IsNullOrEmpty(cached) == false) return cached;
+                    }
+                }
+                else
+                {
+                    _cacheIsRunning.TryAdd(key, true);
+
+                    string value = $"{i}_inner_{DateTime.Now.Ticks}";
+                    Console.WriteLine(value);
+                    //logic with take time here
+                    Thread.Sleep(2000);
+
+                    _cacheIsDone.TryAdd(key, true);
+
+                    _cache.TryAdd(key, value);
+
+                    return $"{i}_Data_{value}";
+                }
             }
-
-            _cacheIsRunning.GetOrAdd(key, true);
-
-            if (_cache.TryGetValue(key, out Task<string> val)) return await val;
-
-            string value = $"{i}_inner_{DateTime.Now.Ticks}";
-            Console.WriteLine(value);
-            //logic with take time here
-            Thread.Sleep(2000);
-            _cacheIsDone.GetOrAdd(key, true);
-            return $"{i}_Data_{value    }";
         }
     }
 }
