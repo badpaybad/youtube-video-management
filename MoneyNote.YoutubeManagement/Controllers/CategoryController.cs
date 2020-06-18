@@ -22,7 +22,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
         
         public IActionResult SelectAll([FromBody] JsGridFilter filter)
         {
-            return Json(new AjaxResponse<List<CmsCategory>>
+            return Json(new JsonResponse<List<CmsCategory>>
             {
                 data = new YoutubeContentRepository().ListCategory(filter).data
             });
@@ -30,7 +30,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
 
         public IActionResult CreateOrUpdate([FromBody] CmsCategory data)
         {
-            if (string.IsNullOrEmpty(data.Title)) return Json(new AjaxResponse<string> { code = 1, message = "Title can not be empty" });
+            if (string.IsNullOrEmpty(data.Title)) return Json(new JsonResponse<string> { code = 1, message = "Title can not be empty" });
             if (data.Id == null || data.Id== Guid.Empty) data.Id = Guid.NewGuid();
 
             using (var db = new MoneyNoteDbContext())
@@ -48,7 +48,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
 
                 db.SaveChanges();
             }
-            return Json(new AjaxResponse<CmsCategory> { data = data });
+            return Json(new JsonResponse<CmsCategory> { data = data });
         }
 
       
@@ -63,7 +63,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                     db.SaveChanges();
                 }
             }
-            return Json(new AjaxResponse<CmsCategory> { data = data });
+            return Json(new JsonResponse<CmsCategory> { data = data });
         }
     }
 }

@@ -42,6 +42,7 @@ namespace MoneyNote.YoutubeManagement
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+                c.CustomSchemaIds((type) => type.FullName);
             });
 
             services.AddControllersWithViews();

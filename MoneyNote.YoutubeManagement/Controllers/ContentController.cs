@@ -24,7 +24,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
         public IActionResult SelectAll([FromBody] JsGridFilter filter)
         {
           
-            return Json(new AjaxResponse<ContentJsGridResult>
+            return Json(new JsonResponse<ContentJsGridResult>
             {
                 data = new YoutubeContentRepository().ListContent(filter)
             });
@@ -32,7 +32,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
 
         public IActionResult CreateOrUpdate([FromBody] CmsContent data)
         {
-            if (string.IsNullOrEmpty(data.Title)) return Json(new AjaxResponse<string> { code = 1, message = "Title can not be empty" });
+            if (string.IsNullOrEmpty(data.Title)) return Json(new JsonResponse<string> { code = 1, message = "Title can not be empty" });
             if (data.Id == null || data.Id == Guid.Empty) data.Id = Guid.NewGuid();
 
             using (var db = new MoneyNoteDbContext())
@@ -65,7 +65,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                 db.SaveChanges();
             }
 
-            return Json(new AjaxResponse<CmsContent> { data = data });
+            return Json(new JsonResponse<CmsContent> { data = data });
         }
 
 
@@ -80,7 +80,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                     db.SaveChanges();
                 }
             }
-            return Json(new AjaxResponse<CmsContent> { data = data });
+            return Json(new JsonResponse<CmsContent> { data = data });
         }
 
         public IActionResult UpdateRelation([FromBody] ContentRelationModel data)
@@ -99,7 +99,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                 db.SaveChanges();
             }
 
-            return Json(new AjaxResponse<ContentRelationModel> { data = data });
+            return Json(new JsonResponse<ContentRelationModel> { data = data });
         }
 
         public IActionResult YoutubeCrawl([FromBody] YoutubeCrawlRequest request)
@@ -130,7 +130,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                         }
                     }
 
-                    return base.Json(new AjaxResponse<CmsContent>
+                    return base.Json(new JsonResponse<CmsContent>
                     {
                         data = cmsContent
                     });
@@ -139,7 +139,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new AjaxResponse<CmsContent>
+                return Json(new JsonResponse<CmsContent>
                 {
                     code = 1,
                     message = ex.Message

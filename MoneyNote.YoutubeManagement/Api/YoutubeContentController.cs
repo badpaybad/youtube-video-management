@@ -15,32 +15,36 @@ namespace MoneyNote.YoutubeManagement.Api
     [Route("api/[controller]")]
     [ApiController]
     [ClaimAndValidatePermission("*", "ApiYoutubeContent", true)]
-    [ApiExplorerSettings(IgnoreApi = false)]
+    [ApiExplorerSettings(IgnoreApi = false)]   
     public class YoutubeContentController : ControllerBase
     {
         [Route("ListCategory")]
-        public AjaxResponse<List<CmsCategory>> ListCategory(JsGridFilter filter)
+        [HttpPost]
+        public JsonResponse<CategoryJsGridResult> ListCategory(JsGridFilter filter)
         {
             filter = filter ?? new JsGridFilter();
             filter.categoryIds = filter.categoryIds ?? new List<Guid>();
             filter.categoryIds.Where(i => i != null && i != Guid.Empty).ToList();
 
-            return new AjaxResponse<List<CmsCategory>>
+            return new JsonResponse<CategoryJsGridResult>
             {
-                data = new YoutubeContentRepository().ListCategory(filter).data
+                data = new YoutubeContentRepository().ListCategory(filter)
             };
         }
+
         [Route("ListContent")]
-        public AjaxResponse<ContentJsGridResult> ListContent(JsGridFilter filter)
+        [HttpPost]
+        public JsonResponse<ContentJsGridResult> ListContent(JsGridFilter filter)
         {
 
-            return new AjaxResponse<ContentJsGridResult>
+            return new JsonResponse<ContentJsGridResult>
             {
                 data = new YoutubeContentRepository().ListContent(filter)
             };
         }
         [Route("GetContent")]
-        public AjaxResponse<CmsContent> GetContent(ContentRequest request)
+        [HttpPost]
+        public JsonResponse<CmsContent> GetContent(ContentRequest request)
         {
             using (var db = new MoneyNoteDbContext())
             {
@@ -51,7 +55,7 @@ namespace MoneyNote.YoutubeManagement.Api
                     db.SaveChanges();
                 }
 
-                return new AjaxResponse<CmsContent> { data = exited };
+                return new JsonResponse<CmsContent> { data = exited };
             }
         }
     }

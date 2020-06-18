@@ -46,13 +46,14 @@ namespace MoneyNote.YoutubeManagement.Controllers
         {
             var ok = Auth.Login(user.Username, user.Password, HttpContext, out string token);
 
-            return Json(new AjaxResponse<string>
+            return Json(new JsonResponse<string>
             {
                 code = ok == true ? 0: 1,
                 message = ok == true ? "Loged" : "Wrong username or password",
                 data = token
             });
         }
+
         [Route(Auth.LogoutUrl)]
         public IActionResult Logout()
         {

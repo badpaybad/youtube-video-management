@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MoneyNote.YoutubeManagement.Models
 {
-    public class AjaxResponse<T>
+    public class JsonResponse<T>
     {
         public int code { get; set; }
         public string message { get; set; }

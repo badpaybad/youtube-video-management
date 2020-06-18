@@ -26,7 +26,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
             {
                 var query = db.SysPermissions.OrderBy(i=>i.ModuleCode).ThenBy(i=>i.Code).Where(i => i.IsDeleted == 0);
 
-                return Json(new AjaxResponse<List<SysPermission>>
+                return Json(new JsonResponse<List<SysPermission>>
                 {
                     data = query.ToList()
                 });
@@ -80,7 +80,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                     })
                     .Distinct().ToList();
 
-                return Json(new AjaxResponse<UserJsGridResult>
+                return Json(new JsonResponse<UserJsGridResult>
                 {
                     data = new UserJsGridResult
                     {
@@ -94,7 +94,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
 
         public IActionResult CreateOrUpdate([FromBody] User data)
         {
-            if (string.IsNullOrEmpty(data.Username)) return Json(new AjaxResponse<string> { code = 1, message = "Usenam can not be empty" });
+            if (string.IsNullOrEmpty(data.Username)) return Json(new JsonResponse<string> { code = 1, message = "Usenam can not be empty" });
             if (data.Id == null || data.Id == Guid.Empty) data.Id = Guid.NewGuid();
 
             var passwordHashed = string.Empty;
@@ -147,7 +147,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
 
             data.Password = string.Empty;
 
-            return Json(new AjaxResponse<User> { data = data });
+            return Json(new JsonResponse<User> { data = data });
         }
 
         public IActionResult Delete([FromBody] User data)
@@ -161,7 +161,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                     db.SaveChanges();
                 }
             }
-            return Json(new AjaxResponse<User> { data = data });
+            return Json(new JsonResponse<User> { data = data });
         }
     }
 }
