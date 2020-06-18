@@ -19,7 +19,17 @@ namespace MoneyNote.Identity.Enities
         [NotMapped]
         public List<UserAcl.Dto>? Acls { get; set; } = new List<UserAcl.Dto>();
 
-     
+        public class Dto
+        {
+            public Guid Id { get; set; }
+            public string Username { get; set; }
+            public string Password { get; set; }
+            public DateTime? LastLogedin { get; set; }
+
+            public string LastToken { get; set; }
+
+            public List<UserAcl.Dto>? Acls { get; set; } = new List<UserAcl.Dto>();
+        }
     }
 
 }

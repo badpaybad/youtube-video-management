@@ -7,6 +7,7 @@ using MoneyNote.Identity;
 using MoneyNote.Identity.Enities;
 using MoneyNote.Identity.PermissionSchemes;
 using MoneyNote.YoutubeManagement.Models;
+using MoneyNote.YoutubeManagement.Repository;
 
 namespace MoneyNote.YoutubeManagement.Controllers
 {
@@ -21,26 +22,10 @@ namespace MoneyNote.YoutubeManagement.Controllers
         //[ApiExplorerSettings(GroupName = "Category")]
         public IActionResult SelectAll([FromBody] JsGridFilter filter)
         {
-            filter = filter ?? new JsGridFilter();
-            filter.categoryIds = filter.categoryIds ?? new List<Guid>();
-            filter.categoryIds.Where(i => i != null && i != Guid.Empty).ToList();
-
-            using (var db = new MoneyNoteDbContext())
+            return Json(new AjaxResponse<List<CmsCategory>>
             {
-                var query = db.CmsCategories.Where(i => i.IsDeleted == 0);
-                if (!string.IsNullOrEmpty(filter.title))
-                {
-                    query = query.Where(i => i.Title.Contains(filter.title));
-                }
-                if (filter.findRootItem != null && filter.findRootItem == true)
-                {
-                    query = query.Where(i => i.ParentId == null || i.ParentId == Guid.Empty);
-                }
-                return Json(new AjaxResponse<List<CmsCategory>>
-                {                    
-                    data = query.ToList()
-                });
-            }
+                data = new YoutubeContentRepository().ListCategory(filter).data
+            });
         }
 
         public IActionResult CreateOrUpdate([FromBody] CmsCategory data)

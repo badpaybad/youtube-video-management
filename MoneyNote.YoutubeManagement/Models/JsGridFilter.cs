@@ -28,7 +28,12 @@ namespace MoneyNote.YoutubeManagement.Models
         public List<T> data { get; set; }
         public long itemsCount { get; set; }
     }
+    public class CategoryJsGridResult : IJsGridResult<CmsCategory>
+    {
+        public List<CmsCategory> data { get; set; }
+        public long itemsCount { get; set; }
 
+    }
     public class ContentJsGridResult: IJsGridResult<CmsContent>
     {
         public List<CmsContent> data { get; set; }
@@ -47,4 +52,8 @@ namespace MoneyNote.YoutubeManagement.Models
         public List<UserAcl.Dto> ListUserAcl { get; set; }
     }
 
+    public class ContentRequest
+    {
+        public Guid id { get; set; }
+    }
 }

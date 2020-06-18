@@ -7,5 +7,10 @@ namespace MoneyNote.Identity.Enities
     {
         public string Code { get; set; }
         public string ModuleCode { get; set; }
+        public class Dto
+        {
+            public string Code { get; set; }
+            public string ModuleCode { get; set; }
+        }
     }
 }

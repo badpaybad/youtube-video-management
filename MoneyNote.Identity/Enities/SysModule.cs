@@ -9,5 +9,10 @@ namespace MoneyNote.Identity.Enities
     public class SysModule : AbastractEntity
     {
         public string Code { get; set; }
+
+        public class Dto
+        {
+            public string Code { get; set; }
+        }
     }
 }

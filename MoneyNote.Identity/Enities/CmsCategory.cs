@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MoneyNote.Identity.Enities
 {
@@ -6,5 +7,12 @@ namespace MoneyNote.Identity.Enities
     public class CmsCategory: AbastractEntity
     {
         public string Title { get; set; }
+
+        public class Dto
+        {
+            public Guid Id { get; set; }
+            public Guid ParentId { get; set; }
+            public string Title { get; set; }
+        }
     }
 }
