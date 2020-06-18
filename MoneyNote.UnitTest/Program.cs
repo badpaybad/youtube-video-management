@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,6 +15,8 @@ namespace MoneyNote.UnitTest
         {
             Console.WriteLine("Hello World!");
 
+            Stopwatch sw = Stopwatch.StartNew();
+
             Parallel.For(0, 10, (i) =>
             {
                 string value = $"begin_{i}_{DateTime.Now.Ticks}";
@@ -26,11 +29,16 @@ namespace MoneyNote.UnitTest
             {
                 Console.WriteLine(r);
             }
+
+            sw.Stop();
+            Console.WriteLine(sw.ElapsedMilliseconds);
             Console.ReadLine();
         }
 
         public static string BuildCache(int i)
         {
+            if (_cache.TryGetValue("test", out string val)) return val;
+
             string value = $"{i}_inner_{DateTime.Now.Ticks}";
             Console.WriteLine(value);
 
