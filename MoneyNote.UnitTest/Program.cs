@@ -14,7 +14,8 @@ namespace MoneyNote.UnitTest
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-
+            //https://github.com/dotnet/runtime/issues/24293
+            //https://codereview.stackexchange.com/questions/27507/is-this-code-thread-safe-singleton-implementation-using-concurrent-dictionary
             Stopwatch sw = Stopwatch.StartNew();
 
             Parallel.For(0, 10, (i) =>
