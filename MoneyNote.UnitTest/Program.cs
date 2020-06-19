@@ -59,7 +59,7 @@ namespace MoneyNote.UnitTest
                     _cacheIsRunning.TryAdd(key, true);
 
                     string value = $"{i}_inner_{DateTime.Now.Ticks}";
-                    Console.WriteLine(value);
+                    //Console.WriteLine(value);
                     //logic with take time here
                     Thread.Sleep(2000);
 
