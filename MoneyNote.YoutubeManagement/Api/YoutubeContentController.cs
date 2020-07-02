@@ -39,7 +39,7 @@ namespace MoneyNote.YoutubeManagement.Api
 
             return new JsonResponse<ContentJsGridResult>
             {
-                data = new YoutubeContentRepository().ListContent(filter)
+                data = new YoutubeContentRepository().ListContent(filter, true)
             };
         }
         [Route("GetContent")]

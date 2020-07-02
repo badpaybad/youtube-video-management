@@ -36,7 +36,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
 
             using (var db = new MoneyNoteDbContext())
             {
-                var exited = db.CmsCategories.FirstOrDefault(i => i.Id == data.Id && i.IsDeleted == 0);
+                var exited = db.CmsCategories.FirstOrDefault(i => i.Id == data.Id );
                 if (exited == null)
                 {
                     db.CmsCategories.Add(data);
@@ -45,6 +45,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                 {
                     exited.ParentId = data.ParentId;
                     exited.Title = data.Title;
+                    exited.IsDeleted = data.IsDeleted;
                 }
 
                 db.SaveChanges();
@@ -57,10 +58,13 @@ namespace MoneyNote.YoutubeManagement.Controllers
         {
             using (var db = new MoneyNoteDbContext())
             {
-                data = db.CmsCategories.FirstOrDefault(i => i.Id == data.Id && i.IsDeleted == 0);
+                data = db.CmsCategories.FirstOrDefault(i => i.Id == data.Id );
                 if (data != null)
                 {
-                    data.IsDeleted = 1;
+                    db.RemoveRange(db.CmsRelations.Where(i => i.CategoryId == data.Id));
+                    
+                    db.CmsCategories.Remove(data);
+
                     db.SaveChanges();
                 }
             }
@@ -80,21 +84,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                     ParentId = i.ParentId,
                     Title = i.Title
                 }).ToList();
-            }
-
-            //var root = allCat.Where(i => i.ParentId == Guid.Empty).ToList();
-            //foreach (var r in root)
-            //{
-            //    r.Children = allCat.Where(i => i.ParentId == r.Id).ToList();
-            //    foreach (var r1 in r.Children)
-            //    {
-            //        r1.Children = allCat.Where(i => i.ParentId == r.Id).ToList();
-            //        foreach (var r2 in r1.Children)
-            //        {
-            //            r2.Children = allCat.Where(i => i.ParentId == r.Id).ToList();
-            //        }
-            //    }
-            //}
+            }         
 
             return Json(new JsonResponse<List<CmsCategory.Dto>> { data = allCat });
         }

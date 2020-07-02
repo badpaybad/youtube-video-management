@@ -13,6 +13,7 @@ using Microsoft.OpenApi.Models;
 using MoneyNote.Identity.Middleware;
 using MoneyNote.Identity.PermissionSchemes;
 using MoneyNote.YoutubeManagement.Configs;
+using MoneyNote.YoutubeManagement.Repository;
 
 namespace MoneyNote.YoutubeManagement
 {
@@ -79,9 +80,10 @@ namespace MoneyNote.YoutubeManagement
 
             app.UseStaticFiles();
 
-
             Auth.InitSupperAdmin();
-           
+
+            new CategoryScheduler().Run();
+
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {

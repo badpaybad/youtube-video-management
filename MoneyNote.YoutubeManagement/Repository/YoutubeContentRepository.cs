@@ -18,7 +18,7 @@ namespace MoneyNote.YoutubeManagement.Repository
             List<CmsCategory> lst;
             using (var db = new MoneyNoteDbContext())
             {
-                var query = db.CmsCategories.Where(i => i.IsDeleted == 0);
+                var query = db.CmsCategories.AsQueryable();
                 if (!string.IsNullOrEmpty(filter.title))
                 {
                     query = query.Where(i => i.Title.Contains(filter.title));
@@ -33,7 +33,7 @@ namespace MoneyNote.YoutubeManagement.Repository
             }
         }
 
-        public ContentJsGridResult ListContent(JsGridFilter filter)
+        public ContentJsGridResult ListContent(JsGridFilter filter, bool onlyPublished = false)
         {
             filter = filter ?? new JsGridFilter();
             filter.categoryIds = filter.categoryIds ?? new List<Guid>();
@@ -45,7 +45,11 @@ namespace MoneyNote.YoutubeManagement.Repository
 
             using (var db = new MoneyNoteDbContext())
             {
-                var query = db.CmsContents.Where(i => i.IsDeleted == 0);
+                var query = db.CmsContents.AsQueryable();
+                if (onlyPublished)
+                {
+                    query = query.Where(i => i.IsDeleted == 0);
+                }
                 if (!string.IsNullOrEmpty(filter.title))
                 {
                     query = query.Where(i => i.Title.Contains(filter.title));

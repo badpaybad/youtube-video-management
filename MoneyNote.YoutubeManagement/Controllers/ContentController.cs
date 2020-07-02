@@ -37,7 +37,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
 
             using (var db = new MoneyNoteDbContext())
             {
-                var exited = db.CmsContents.FirstOrDefault(i => i.Id == data.Id && i.IsDeleted == 0);
+                var exited = db.CmsContents.FirstOrDefault(i => i.Id == data.Id);
                 if (exited == null)
                 {
                     db.CmsContents.Add(data);
@@ -49,6 +49,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                     exited.Thumbnail = data.Thumbnail;
                     exited.UrlRef = data.UrlRef;
                     exited.Description = data.Description;
+                    exited.IsDeleted = data.IsDeleted;
                 }
 
                 db.SaveChanges();
@@ -73,10 +74,15 @@ namespace MoneyNote.YoutubeManagement.Controllers
         {
             using (var db = new MoneyNoteDbContext())
             {
-                data = db.CmsContents.FirstOrDefault(i => i.Id == data.Id && i.IsDeleted == 0);
+                data = db.CmsContents.FirstOrDefault(i => i.Id == data.Id );
                 if (data != null)
                 {
-                    data.IsDeleted = 1;
+                    db.CmsContents.Remove(data);
+
+                    var listRelation = db.CmsRelations.Where(i => i.ContentId == data.Id).ToList();
+
+                    db.CmsRelations.RemoveRange(listRelation);
+
                     db.SaveChanges();
                 }
             }
