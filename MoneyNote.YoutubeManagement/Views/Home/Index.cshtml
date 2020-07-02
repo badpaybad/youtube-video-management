@@ -74,7 +74,7 @@ else
 
             </div>
             <hr />
-            <label ><input type="checkbox" id="contentPublished" /> Publish</label>
+            <label><input type="checkbox" id="contentPublished" /> Publish</label>
             <hr style="clear:both" />
             <div style="clear:both">
                 <button onclick="Home.closeRight()" style="float:left">Close</button>
@@ -85,10 +85,11 @@ else
     </div>
 }
 @section Scripts{
+    @if (user != null)
+    {
+        <script>
+            Home.init(jQuery('#categoryTree'), jQuery('#content'));
+        </script>
+    }
 
-    <script>
-
-
-        Home.init(jQuery('#categoryTree'), jQuery('#content'));
-    </script>
 }
