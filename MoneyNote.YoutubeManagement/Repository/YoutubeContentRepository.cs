@@ -48,7 +48,7 @@ namespace MoneyNote.YoutubeManagement.Repository
                 var query = db.CmsContents.AsQueryable();
                 if (onlyPublished)
                 {
-                    query = query.Where(i => i.IsDeleted == 0);
+                    query = query.Where(i => i.IsDeleted == 1);
                 }
                 if (!string.IsNullOrEmpty(filter.title))
                 {
@@ -62,15 +62,21 @@ namespace MoneyNote.YoutubeManagement.Repository
                 {
                     query = query.Where(i => i.UrlRef.Contains(filter.urlRef));
                 }
-                if (filter.categoryIds != null && filter.categoryIds.Count > 0)
-                {
-                    query = query.Join(db.CmsRelations, c => c.Id, r => r.ContentId, (c, r) => new { c, r })
-                        .Where(m => filter.categoryIds.Contains(m.r.CategoryId))
-                        .Select(m => m.c);
-                }
+              
                 if (filter.findRootItem != null && filter.findRootItem == true)
                 {
-                    query = query.Where(i => i.ParentId == null || i.ParentId == Guid.Empty);
+                    //query = query.Where(i => i.ParentId == null || i.ParentId == Guid.Empty);
+                    var idsContentRelations = db.CmsRelations.Select(i => i.ContentId).Distinct().ToList();
+                    query = query.Where(i => idsContentRelations.Contains(i.Id) == false);
+                }
+                else
+                {
+                    if (filter.categoryIds != null && filter.categoryIds.Count > 0)
+                    {
+                        query = query.Join(db.CmsRelations, c => c.Id, r => r.ContentId, (c, r) => new { c, r })
+                            .Where(m => filter.categoryIds.Contains(m.r.CategoryId))
+                            .Select(m => m.c);
+                    }
                 }
                 if (filter.contentId != null && filter.contentId.Value != Guid.Empty)
                 {

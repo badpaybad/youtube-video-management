@@ -24,6 +24,21 @@ namespace MoneyNote.YoutubeManagement.Repository
             {
                 try
                 {
+                    using (var db = new MoneyNoteDbContext())
+                    {
+                        var idsContent = db.CmsContents.Select(i => i.Id).ToList();
+                        var noRelation = db.CmsRelations.Where(i => idsContent.Contains(i.ContentId) == false).ToList();
+                        db.CmsRelations.RemoveRange(noRelation);
+                        db.SaveChanges();
+                    }
+                    using (var db = new MoneyNoteDbContext())
+                    {
+                        var idsCat = db.CmsCategories.Select(i => i.Id).ToList();
+                        var noRelation = db.CmsRelations.Where(i => idsCat.Contains(i.CategoryId) == false).ToList();
+                        db.CmsRelations.RemoveRange(noRelation);
+                        db.SaveChanges();
+                    }
+
                     List<CmsCategory> cats;
                     using (var db = new MoneyNoteDbContext())
                     {

@@ -74,7 +74,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
         public IActionResult GetTree()
         {
             List<CmsCategory.Dto> allCat = new List<CmsCategory.Dto>();
-
+            int uncategoryItems;
             using (var db = new MoneyNoteDbContext())
             {
                 allCat = db.CmsCategories.Select(i => new CmsCategory.Dto
@@ -84,9 +84,18 @@ namespace MoneyNote.YoutubeManagement.Controllers
                     ParentId = i.ParentId,
                     Title = i.Title
                 }).ToList();
+
+                uncategoryItems = db.CmsContents.Where(i => db.CmsRelations.Select(r => r.ContentId).Distinct().Contains(i.Id) == false)
+                    .Count();
             }         
 
-            return Json(new JsonResponse<List<CmsCategory.Dto>> { data = allCat });
+            return Json(new JsonResponse<CategoryTree> { data = new CategoryTree { Data = allCat , UncategoryItemsCount= uncategoryItems } });
         }
+    }
+
+    public class CategoryTree
+    {
+        public int UncategoryItemsCount { get; set; }
+        public List<CmsCategory.Dto> Data { get; set; }
     }
 }

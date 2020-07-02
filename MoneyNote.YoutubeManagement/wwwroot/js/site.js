@@ -952,22 +952,24 @@ var Home = {
             data: JSON.stringify({})
         }).done(function (msg) {
 
-            Home._allCategory = msg.data;
+            Home._allCategory = msg.data.data;
 
-            var totalItem = msg.data.reduce(function (t, n) {
+            var totalItem = Home._allCategory.reduce(function (t, n) {
                 return { itemsCount: t.itemsCount + n.itemsCount };
             });
             var idsValid = [];
             var template = `
-<div><a href='javascript:void(0)' onclick='Home.selectCategory(0)'>All (${totalItem.itemsCount})</a></div>`;
-            for (var r of msg.data.filter(i => i.parentId == App.guidEmpty())) {
-                r.children = msg.data.filter(i => i.parentId == r.id);
+<div><a href='javascript:void(0)' onclick='Home.selectCategory(0)'>All (${totalItem.itemsCount + msg.data.uncategoryItemsCount})</a></div>
+<div><a href='javascript:void(0)' onclick='Home.selectCategory(-1)'>Uncategory (${msg.data.uncategoryItemsCount})</a></div>
+`;
+            for (var r of Home._allCategory.filter(i => i.parentId == App.guidEmpty())) {
+                r.children = Home._allCategory.filter(i => i.parentId == r.id);
                 idsValid.push(r.id);
                 template += `<div>
 <button onclick='Home.deleteCategory("${r.id}")'>[X]</button> <button onclick='Home.editCategory("${r.id}")'>[...]</button>
 <a href='javascript:void(0)'  onclick='Home.selectCategory("${r.id}")' style='padding-left:5px'> ${r.title} (${r.itemsCount})</a></div>`;
                 for (var r1 of r.children) {
-                    r1.children = msg.data.filter(i => i.parentId == r1.id);
+                    r1.children = Home._allCategory.filter(i => i.parentId == r1.id);
                     idsValid.push(r1.id);
                     template += `<div>
 <button onclick='Home.deleteCategory("${r.id}")'>[X]</button> <button onclick='Home.editCategory("${r.id}")'>[...]</button>
@@ -981,7 +983,7 @@ var Home = {
                 }
             }
             if (idsValid.length > 0) {
-                var orphanItems = msg.data.filter(i => !idsValid.includes(i.id));
+                var orphanItems = Home._allCategory.filter(i => !idsValid.includes(i.id));
                 template += `<hr>`;
                 for (var r in orphanItems) {
                     template += `div>
@@ -1014,8 +1016,13 @@ var Home = {
         if (Home._selectedCategory == 0 || Home._selectedCategory == null) {
             filter.categoryIds = [];
         } else {
-            filter.categoryIds = [Home._selectedCategory];
+            if (Home._selectedCategory == -1) {
+                filter.findRootItem = true;
+            } else {
+                filter.categoryIds = [Home._selectedCategory];
+            }            
         }
+        
 
         jQuery.ajax({
             method: "POST",
@@ -1032,12 +1039,13 @@ var Home = {
                 var temparray = msg.data.data.slice(i, i + chunk);
                 template += `<div style="clear:both; ">`
                 for (var itm of temparray) {
+                    var publised = itm.isDeleted == 1 ? "Publised" : "Unpublish";
                     template += `<div style='width:32%;max-width:32%;float:left; padding-left:1%;padding-bottom:10px;'>
                                     <img src='${itm.thumbnail}' alt='${itm.title}' style='max-width:99%; height:150px'/>
                                     <div style='width:95%; clear:both'>                                                                             
                                             <button onclick='Home.editContent("${itm.id}")'>...</button>
                                             ${itm.title}
-                                            <div>views: ${itm.countView} | <a target='_blank' href='${itm.urlRef}'>Origin</a></div>
+                                            <div> ${publised} | views: ${itm.countView} | <a target='_blank' href='${itm.urlRef}'>Origin</a></div>
                                     </div>
                               </div>`;
                 }
@@ -1094,6 +1102,13 @@ var Home = {
             jQuery('#contentImgThumbnail').attr("src", content.thumbnail);
             jQuery('#contentOpenUrlRef').attr("href", content.urlRef);
 
+            if (content.isDeleted == 1) {
+                jQuery('#contentPublished').prop('checked', true);
+            } else {
+
+                jQuery('#contentPublished').prop('checked', false);
+            }
+
             var template = ``;
             for (var r of Home._allCategory.filter(i => i.parentId == App.guidEmpty())) {
                 r.children = Home._allCategory.filter(i => i.parentId == r.id);
@@ -1146,6 +1161,9 @@ var Home = {
         jQuery('#contentThumbnail').val('');
         jQuery('#contentImgThumbnail').attr("src", '');
 
+
+        jQuery('#contentPublised').prop("checked", false);
+
     },
     saveRight: function () {
         if (Home._contentId == null || Home._contentId == 'undefined')
@@ -1155,6 +1173,10 @@ var Home = {
         $.each($("#contentCategories input:checked"), function () {
             categories.push(jQuery(this).val());
         });
+        var isDeleted = $("#contentPublished input:checked").length > 0;
+        if (isDeleted == false) {
+            isDeleted = $("#contentPublished").prop("checked");
+        }
 
         jQuery.ajax({
             method: "POST",
@@ -1166,6 +1188,7 @@ var Home = {
                 urlRef: jQuery('#contentUrlRef').val(),
                 thumbnail: jQuery('#contentThumbnail').val(),
                 description: jQuery('#contentDescription').val(),
+                isDeleted: isDeleted==true?1:0,
                 categoryIds: categories,
                 parentId: App.guidEmpty(),
                 id: Home._contentId
@@ -1214,7 +1237,7 @@ var Home = {
             jQuery('#contentThumbnail').val(data.thumbnail);
             jQuery('#contentImgThumbnail').attr("src", data.thumbnail);
             jQuery('#contentOpenUrlRef').attr("href", data.urlRef);
-
+            
             jQuery(sender).text('Crawl new');
 
         }, function () {
