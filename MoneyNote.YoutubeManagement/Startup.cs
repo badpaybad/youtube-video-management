@@ -46,7 +46,9 @@ namespace MoneyNote.YoutubeManagement
             });
 
             services.AddControllersWithViews();
+            //.AddJsonOptions(o=>o.JsonSerializerOptions.ReferenceHandler= System.Text.Json.Serialization.ReferenceHandler.Preserve);
             services.AddControllers();
+            //.AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

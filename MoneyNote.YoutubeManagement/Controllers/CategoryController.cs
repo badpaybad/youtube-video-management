@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MoneyNote.Identity;
@@ -19,7 +20,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
         {
             return View();
         }
-        
+
         public IActionResult SelectAll([FromBody] JsGridFilter filter)
         {
             return Json(new JsonResponse<List<CmsCategory>>
@@ -31,7 +32,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
         public IActionResult CreateOrUpdate([FromBody] CmsCategory data)
         {
             if (string.IsNullOrEmpty(data.Title)) return Json(new JsonResponse<string> { code = 1, message = "Title can not be empty" });
-            if (data.Id == null || data.Id== Guid.Empty) data.Id = Guid.NewGuid();
+            if (data.Id == null || data.Id == Guid.Empty) data.Id = Guid.NewGuid();
 
             using (var db = new MoneyNoteDbContext())
             {
@@ -51,7 +52,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
             return Json(new JsonResponse<CmsCategory> { data = data });
         }
 
-      
+
         public IActionResult Delete([FromBody] CmsCategory data)
         {
             using (var db = new MoneyNoteDbContext())
@@ -64,6 +65,38 @@ namespace MoneyNote.YoutubeManagement.Controllers
                 }
             }
             return Json(new JsonResponse<CmsCategory> { data = data });
+        }
+
+        public IActionResult GetTree()
+        {
+            List<CmsCategory.Dto> allCat = new List<CmsCategory.Dto>();
+
+            using (var db = new MoneyNoteDbContext())
+            {
+                allCat = db.CmsCategories.Select(i => new CmsCategory.Dto
+                {
+                    Id = i.Id,
+                    ItemsCount = i.ItemsCount,
+                    ParentId = i.ParentId,
+                    Title = i.Title
+                }).ToList();
+            }
+
+            //var root = allCat.Where(i => i.ParentId == Guid.Empty).ToList();
+            //foreach (var r in root)
+            //{
+            //    r.Children = allCat.Where(i => i.ParentId == r.Id).ToList();
+            //    foreach (var r1 in r.Children)
+            //    {
+            //        r1.Children = allCat.Where(i => i.ParentId == r.Id).ToList();
+            //        foreach (var r2 in r1.Children)
+            //        {
+            //            r2.Children = allCat.Where(i => i.ParentId == r.Id).ToList();
+            //        }
+            //    }
+            //}
+
+            return Json(new JsonResponse<List<CmsCategory.Dto>> { data = allCat });
         }
     }
 }

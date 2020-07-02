@@ -101,6 +101,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="/plugins/jsgrid/jsgrid.min.js"></script>
 
     <script src="~/js/site.js"></script>
+    <script>
+
+        jQuery(document).ajaxComplete(function (event, xhr, settings) {
+            //
+            if (xhr.responseText.indexOf("<!DOCTYPE html>") >= 0) {
+                window.location = "/Login";
+            }
+        });
+    </script>
     @RenderSection("Scripts", false)
 </body>
 </html>

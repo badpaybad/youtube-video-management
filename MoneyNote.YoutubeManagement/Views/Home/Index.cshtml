@@ -1,10 +1,51 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
-}
 
-<div class="text-center">
-    <h1 class="display-4">
-        <img src="~/img/logo.png" style="max-width:200px;" />
-    </h1>
-    <h5>@MoneyNote.YoutubeManagement.Configs.Config.Slogan</h5>
-</div>
+    MoneyNote.Identity.Enities.User user = MoneyNote.Identity.PermissionSchemes.Auth.Get(Context);
+
+}
+@section BodyTitle{
+    ULIFE - @MoneyNote.YoutubeManagement.Configs.Config.Slogan
+}
+@section BodyBreadcrumb{
+    @if (user != null)
+    {
+        <button onclick="Home.addNewRight()">Add new</button>
+    }
+}
+@if (user == null)
+{
+    <div class="text-center">
+
+        <h1 class="display-4">
+            <img src="~/img/logo.png" style="max-width:200px;" />
+        </h1>
+        <h5>@MoneyNote.YoutubeManagement.Configs.Config.Slogan</h5>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-3">
+            <div><b>DANH MỤC</b></div>
+            <div id="categoryTree"></div>
+        </div>
+        <div id="mid" class="col-md-9">
+            <div id="content"></div>
+        </div>
+        <div id="right" class="display:none">
+            <div style="clear:both">
+                <button onclick="Home.closeRight()" style="float:left">[X]</button>
+                <button onclick="Home.deleteRight()" style="float:right">Delete</button>
+                <button onclick="Home.saveRight()" style="float:right">Save</button>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts{
+
+    <script>
+
+
+        Home.init(jQuery('#categoryTree'), jQuery('#content'));
+    </script>
+}

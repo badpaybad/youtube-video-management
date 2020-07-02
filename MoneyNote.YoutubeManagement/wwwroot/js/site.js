@@ -930,3 +930,166 @@ var YoutuberCrawler = {
         }
     }
 }
+
+
+var Home = {
+    _$content: null,
+    _$categoryTree: null,
+    _selectedCategory: null,
+    init: function ($categoryTree, $content) {
+        Home._$categoryTree = $categoryTree;
+        Home._$content = $content;
+        Home.loadCategoryTree();
+        Home.loadContent();
+    },
+    loadCategoryTree: function () {
+        jQuery.ajax({
+            method: "POST",
+            url: "/Category/GetTree",
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify({})
+        }).done(function (msg) {
+            var totalItem = msg.data.reduce(function (t, n) {
+                return {itemsCount: t.itemsCount + n.itemsCount };
+            });
+
+            var template = `<div><a href='javascript:void(0)' onclick='Home.selectCategory(0)'>All (${totalItem.itemsCount})</a></div>`;
+            for (var r of msg.data.filter(i => i.parentId == App.guidEmpty())) {
+                r.children = msg.data.filter(i => i.parentId == r.id);
+
+                template += `<div><a href='javascript:void(0)'  onclick='Home.selectCategory("${r.id}")' style='padding-left:5px'> ${r.title} (${r.itemsCount})</a></div>`;
+                for (var r1 of r.children) {
+                    r1.children = msg.data.filter(i => i.parentId == r1.id);
+
+                    template += `<div>-<a href='javascript:void(0)'  onclick='Home.selectCategory("${r1.id}")' style='padding-left:5px'> ${r1.title} (${r1.itemsCount})</a></div>`;
+                    for (var r2 of r1.children) {
+
+                        template += `<div>--<a href='javascript:void(0)'  onclick='Home.selectCategory("${r2.id}")' style='padding-left:10px'>${r2.title} (${r2.itemsCount})</a></div>`;
+                    }
+                }
+            }
+            Home._$categoryTree.html(template);
+        });
+    },
+    selectCategory: function (catId) {
+        Home._selectedCategory = catId;
+        Home.loadContent();
+    },
+    loadContent: function () {
+        var filter = {
+            pageSize: 0,
+            pageIndex: 0,
+            contentId: App.guidEmpty(),
+            parentId: App.guidEmpty(),
+            categoryIds: [],
+            findRootItem: false,
+            title: "",
+            urlRef: "",
+            description: "",
+            thumbnail: ""
+        };
+        
+        if (Home._selectedCategory == 0 || Home._selectedCategory == null) {
+            filter.categoryIds = [];
+        } else {
+            filter.categoryIds = [Home._selectedCategory];
+        }
+       
+        jQuery.ajax({
+            method: "POST",
+            url: "/Content/SelectAll",
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(filter)
+        }).done(function (msg) {
+
+            var template = ``;
+
+            var i, j, chunk = 3;
+            for (i = 0, j = msg.data.data.length; i < j; i += chunk) {
+                var temparray = msg.data.data.slice(i, i + chunk);
+                template+=`<div style="clear:both; ">`
+                for (var itm of temparray) {
+                    template += `<div style='width:32%;max-width:32%;float:left; padding-left:1%;padding-bottom:10px;'>
+                                    <img src='${itm.thumbnail}' alt='${itm.title}' style='width:99%; height:150px'/>
+                                    <div style='width:95%; clear:both'>
+                                        <div style='width:90%;float:left'>
+                                            ${itm.title}
+                                            <div>views: ${itm.countView} | <a href='${itm.urlRef}'>Origin</a></div>
+                                        </div>
+                                        <div style='width:9.9%;float:left'> 
+                                            <button onclick='Home.editContent("${itm.id}")'>...</button>
+                                        </div>
+                                    </div>
+                              </div>`;
+                }
+                template += `</div>`;
+            }
+
+        
+            Home._$content.html(template);
+
+        });
+    }
+    ,
+    _contentId:null,
+    editContent: function (id) {
+        Home._contentId = id;
+        var filter = {
+            pageSize: 0,
+            pageIndex: 0,
+            contentId: id,
+            parentId: App.guidEmpty(),
+            findRootItem: false,
+            categoryIds: [],
+            title: "",
+            urlRef: "",
+            description: "",
+            thumbnail: ""
+        };
+
+        if (Home._selectedCategory == 0 || Home._selectedCategory==null) {
+            filter.categoryIds = [];
+        } else {
+            filter.categoryIds = [Home._selectedCategory];
+        }
+        
+        jQuery.ajax({
+            method: "POST",
+            url: "/Content/SelectAll",
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(filter)
+        }).done(function (msg) {
+
+            var content = msg.data.data[0];
+
+            jQuery('#mid').attr("class", "col-md-5");
+            jQuery('#right').attr("class", "col-md-4");
+            jQuery('#right').attr("style", "");
+         
+        });
+    },
+    closeRight: function () {
+        jQuery('#mid').attr("class", "col-md-9");
+        jQuery('#right').attr("class", "");
+        jQuery('#right').attr("style", "display:none");
+    },
+    addNewRight: function () {
+        Home._contentId = App.guidEmpty();
+        jQuery('#mid').attr("class", "col-md-5");
+        jQuery('#right').attr("class", "col-md-4");
+        jQuery('#right').attr("style", "");
+
+    },
+    saveRight: function () {
+
+    },
+    deleteRight: function () {
+        Home._contentId = App.guidEmpty();
+        jQuery('#mid').attr("class", "col-md-5");
+        jQuery('#right').attr("class", "col-md-4");
+        jQuery('#right').attr("style", "");
+    }
+}

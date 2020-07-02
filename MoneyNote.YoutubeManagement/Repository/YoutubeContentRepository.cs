@@ -10,7 +10,7 @@ namespace MoneyNote.YoutubeManagement.Repository
 {
     public class YoutubeContentRepository
     {
-        public CategoryJsGridResult ListCategory( JsGridFilter filter)
+        public CategoryJsGridResult ListCategory(JsGridFilter filter)
         {
             filter = filter ?? new JsGridFilter();
             filter.categoryIds = filter.categoryIds ?? new List<Guid>();
@@ -27,13 +27,13 @@ namespace MoneyNote.YoutubeManagement.Repository
                 {
                     query = query.Where(i => i.ParentId == null || i.ParentId == Guid.Empty);
                 }
-                lst= query.ToList();
+                lst = query.ToList();
 
                 return new CategoryJsGridResult { data = lst, itemsCount = lst.Count };
             }
         }
 
-        public ContentJsGridResult ListContent( JsGridFilter filter)
+        public ContentJsGridResult ListContent(JsGridFilter filter)
         {
             filter = filter ?? new JsGridFilter();
             filter.categoryIds = filter.categoryIds ?? new List<Guid>();
@@ -68,10 +68,19 @@ namespace MoneyNote.YoutubeManagement.Repository
                 {
                     query = query.Where(i => i.ParentId == null || i.ParentId == Guid.Empty);
                 }
+                if (filter.contentId != null && filter.contentId.Value != Guid.Empty)
+                {
+                    var id = filter.contentId.Value;
+                    query = query.Where(i => i.Id == id);
+                }
                 query = query.Distinct().OrderByDescending(i => i.CreatedAt);
 
                 itemsCount = query.LongCount();
-                data = query.Skip((filter.pageIndex - 1) * filter.pageSize).Take(filter.pageSize).ToList();
+
+                if (filter.pageSize != 0)
+                    query = query.Skip((filter.pageIndex - 1) * filter.pageSize).Take(filter.pageSize);
+
+                data = query.ToList();
 
                 //listCategory = db.CmsCategories.Where(i => i.IsDeleted == 0).ToList();
 
