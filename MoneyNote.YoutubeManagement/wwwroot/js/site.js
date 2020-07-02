@@ -63,7 +63,7 @@ var Category = {
 
             Category._data = msg.data;
 
-            Category._data.unshift({ id: App.guidEmpty(),title:'Root' })
+            Category._data.unshift({ id: App.guidEmpty(), title: 'Root' })
 
             if (funcCallback) {
                 funcCallback();
@@ -160,7 +160,7 @@ var Category = {
                         contentType: 'application/json; charset=utf-8',
                         data: JSON.stringify({
                             title: itm.title,
-                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0? App.guidEmpty() : itm.parentId,
+                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0 ? App.guidEmpty() : itm.parentId,
                             id: itm.id == null || itm.id == 'undefinded' ? App.guidEmpty() : itm.id
                         })
                     }).done(function (msg) {
@@ -181,7 +181,7 @@ var Category = {
                         contentType: 'application/json; charset=utf-8',
                         data: JSON.stringify({
                             title: itm.title,
-                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0? App.guidEmpty() : itm.parentId,
+                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0 ? App.guidEmpty() : itm.parentId,
                             id: itm.id == null || itm.id == 'undefinded' ? App.guidEmpty() : itm.id
                         })
                     }).done(function (msg) {
@@ -354,7 +354,7 @@ var Content = {
                             thumbnail: itm.thumbnail,
                             description: itm.description,
                             categoryIds: itm.categoryIds,
-                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0? App.guidEmpty() : itm.parentId,
+                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0 ? App.guidEmpty() : itm.parentId,
                             id: itm.id == null || itm.id == 'undefinded' ? App.guidEmpty() : itm.id
                         })
                     }).done(function (msg) {
@@ -377,7 +377,7 @@ var Content = {
                             thumbnail: itm.thumbnail,
                             description: itm.description,
                             categoryIds: itm.categoryIds,
-                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0? App.guidEmpty() : itm.parentId,
+                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0 ? App.guidEmpty() : itm.parentId,
                             id: itm.id == null || itm.id == 'undefinded' ? App.guidEmpty() : itm.id
                         })
                     }).done(function (msg) {
@@ -505,7 +505,7 @@ var Content = {
                 {
                     headerTemplate: "Description", name: "description", type: "textarea", width: 150,
                     itemTemplate: function (val, item) {
-                        return `<textarea id='contentDescription' readonly >${item.description}</textarea>`;                        
+                        return `<textarea id='contentDescription' readonly >${item.description}</textarea>`;
                     },
                     insertTemplate: function () {
                         return `<textarea id='contentDescription'></textarea>`;
@@ -546,7 +546,7 @@ var Content = {
                                 jQuery(buttonClicked).attr('class', "far fa-copy");
 
                             }, function () {
-                                    jQuery(buttonClicked).attr('class', "fas fa-2x fa-sync-alt fa-spin");
+                                jQuery(buttonClicked).attr('class', "fas fa-2x fa-sync-alt fa-spin");
                             });
                         });
                         $result = $result.add(jQuery('<hr>'));
@@ -718,7 +718,7 @@ var Admin = {
                         dataType: 'json',
                         contentType: 'application/json; charset=utf-8',
                         data: JSON.stringify({
-                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId ==0 ? App.guidEmpty() : itm.parentId,
+                            parentId: itm.parentId == null || itm.parentId == 'undefinded' || itm.parentId == 0 ? App.guidEmpty() : itm.parentId,
                             username: itm.username,
                             password: itm.password,
                             acls: acls,
@@ -919,7 +919,7 @@ var YoutuberCrawler = {
                 url: "/Content/YoutubeCrawl",
                 dataType: 'json',
                 contentType: 'application/json; charset=utf-8',
-                data: JSON.stringify({ url: url, autoSave:autoSave })
+                data: JSON.stringify({ url: url, autoSave: autoSave })
             }).done(function (msg) {
                 if (msg.code == 0) {
                     onSuccess(msg.data);
@@ -936,6 +936,7 @@ var Home = {
     _$content: null,
     _$categoryTree: null,
     _selectedCategory: null,
+    _allCategory: null,
     init: function ($categoryTree, $content) {
         Home._$categoryTree = $categoryTree;
         Home._$content = $content;
@@ -950,25 +951,45 @@ var Home = {
             contentType: 'application/json; charset=utf-8',
             data: JSON.stringify({})
         }).done(function (msg) {
-            var totalItem = msg.data.reduce(function (t, n) {
-                return {itemsCount: t.itemsCount + n.itemsCount };
-            });
 
-            var template = `<div><a href='javascript:void(0)' onclick='Home.selectCategory(0)'>All (${totalItem.itemsCount})</a></div>`;
+            Home._allCategory = msg.data;
+
+            var totalItem = msg.data.reduce(function (t, n) {
+                return { itemsCount: t.itemsCount + n.itemsCount };
+            });
+            var idsValid = [];
+            var template = `
+<div><a href='javascript:void(0)' onclick='Home.selectCategory(0)'>All (${totalItem.itemsCount})</a></div>`;
             for (var r of msg.data.filter(i => i.parentId == App.guidEmpty())) {
                 r.children = msg.data.filter(i => i.parentId == r.id);
-
-                template += `<div><a href='javascript:void(0)'  onclick='Home.selectCategory("${r.id}")' style='padding-left:5px'> ${r.title} (${r.itemsCount})</a></div>`;
+                idsValid.push(r.id);
+                template += `<div>
+<button onclick='Home.deleteCategory("${r.id}")'>[X]</button> <button onclick='Home.editCategory("${r.id}")'>[...]</button>
+<a href='javascript:void(0)'  onclick='Home.selectCategory("${r.id}")' style='padding-left:5px'> ${r.title} (${r.itemsCount})</a></div>`;
                 for (var r1 of r.children) {
                     r1.children = msg.data.filter(i => i.parentId == r1.id);
-
-                    template += `<div>-<a href='javascript:void(0)'  onclick='Home.selectCategory("${r1.id}")' style='padding-left:5px'> ${r1.title} (${r1.itemsCount})</a></div>`;
+                    idsValid.push(r1.id);
+                    template += `<div>
+<button onclick='Home.deleteCategory("${r.id}")'>[X]</button> <button onclick='Home.editCategory("${r.id}")'>[...]</button>
+-<a href='javascript:void(0)'  onclick='Home.selectCategory("${r1.id}")' style='padding-left:5px'> ${r1.title} (${r1.itemsCount})</a></div>`;
                     for (var r2 of r1.children) {
-
-                        template += `<div>--<a href='javascript:void(0)'  onclick='Home.selectCategory("${r2.id}")' style='padding-left:10px'>${r2.title} (${r2.itemsCount})</a></div>`;
+                        idsValid.push(r2.id);
+                        template += `<div>
+<button onclick='Home.deleteCategory("${r.id}")'>[X]</button> <button onclick='Home.editCategory("${r.id}")'>[...]</button>
+--<a href='javascript:void(0)'  onclick='Home.selectCategory("${r2.id}")' style='padding-left:10px'>${r2.title} (${r2.itemsCount})</a></div>`;
                     }
                 }
             }
+            if (idsValid.length > 0) {
+                var orphanItems = msg.data.filter(i => !idsValid.includes(i.id));
+                template += `<hr>`;
+                for (var r in orphanItems) {
+                    template += `div>
+<button onclick='Home.deleteCategory("${r.id}")'>[X]</button> <button onclick='Home.editCategory("${r.id}")'>[...]</button> 
+<a href='javascript:void(0)'  onclick='Home.selectCategory("${r.id}")' style='padding-left:5px'> ${r.title} (${r.itemsCount})</a></div>`;
+                }
+            }
+
             Home._$categoryTree.html(template);
         });
     },
@@ -989,13 +1010,13 @@ var Home = {
             description: "",
             thumbnail: ""
         };
-        
+
         if (Home._selectedCategory == 0 || Home._selectedCategory == null) {
             filter.categoryIds = [];
         } else {
             filter.categoryIds = [Home._selectedCategory];
         }
-       
+
         jQuery.ajax({
             method: "POST",
             url: "/Content/SelectAll",
@@ -1009,31 +1030,27 @@ var Home = {
             var i, j, chunk = 3;
             for (i = 0, j = msg.data.data.length; i < j; i += chunk) {
                 var temparray = msg.data.data.slice(i, i + chunk);
-                template+=`<div style="clear:both; ">`
+                template += `<div style="clear:both; ">`
                 for (var itm of temparray) {
                     template += `<div style='width:32%;max-width:32%;float:left; padding-left:1%;padding-bottom:10px;'>
-                                    <img src='${itm.thumbnail}' alt='${itm.title}' style='width:99%; height:150px'/>
-                                    <div style='width:95%; clear:both'>
-                                        <div style='width:90%;float:left'>
-                                            ${itm.title}
-                                            <div>views: ${itm.countView} | <a href='${itm.urlRef}'>Origin</a></div>
-                                        </div>
-                                        <div style='width:9.9%;float:left'> 
+                                    <img src='${itm.thumbnail}' alt='${itm.title}' style='max-width:99%; height:150px'/>
+                                    <div style='width:95%; clear:both'>                                                                             
                                             <button onclick='Home.editContent("${itm.id}")'>...</button>
-                                        </div>
+                                            ${itm.title}
+                                            <div>views: ${itm.countView} | <a target='_blank' href='${itm.urlRef}'>Origin</a></div>
                                     </div>
                               </div>`;
                 }
                 template += `</div>`;
             }
 
-        
+
             Home._$content.html(template);
 
         });
     }
     ,
-    _contentId:null,
+    _contentId: null,
     editContent: function (id) {
         Home._contentId = id;
         var filter = {
@@ -1049,12 +1066,12 @@ var Home = {
             thumbnail: ""
         };
 
-        if (Home._selectedCategory == 0 || Home._selectedCategory==null) {
+        if (Home._selectedCategory == 0 || Home._selectedCategory == null) {
             filter.categoryIds = [];
         } else {
             filter.categoryIds = [Home._selectedCategory];
         }
-        
+
         jQuery.ajax({
             method: "POST",
             url: "/Content/SelectAll",
@@ -1068,7 +1085,48 @@ var Home = {
             jQuery('#mid').attr("class", "col-md-5");
             jQuery('#right').attr("class", "col-md-4");
             jQuery('#right').attr("style", "");
-         
+
+
+            jQuery('#contentTitle').val(content.title);
+            jQuery('#contentUrlRef').val(content.urlRef);
+            jQuery('#contentDescription').val(content.description);
+            jQuery('#contentThumbnail').val(content.thumbnail);
+            jQuery('#contentImgThumbnail').attr("src", content.thumbnail);
+            jQuery('#contentOpenUrlRef').attr("href", content.urlRef);
+
+            var template = ``;
+            for (var r of Home._allCategory.filter(i => i.parentId == App.guidEmpty())) {
+                r.children = Home._allCategory.filter(i => i.parentId == r.id);
+                var checked = msg.data.listRelation.filter(i => i.categoryId == r.id).length > 0 ? "checked" : "";
+
+                template += `<div class='form-check' >
+                                        <input class="form-check-input" value='${r.id}' ${checked} type="checkbox">
+                                        <label class="form-check-label">${r.title}</label>
+                                        </div>`;
+
+                for (var r1 of r.children) {
+                    r1.children = Home._allCategory.filter(i => i.parentId == r1.id);
+                    var checked1 = msg.data.listRelation.filter(i => i.categoryId == r1.id).length > 0 ? "checked" : "";
+
+                    template += `<div class='form-check'  > 
+                                        <input class="form-check-input" value='${r1.id}' ${checked1} type="checkbox">
+                                        <label class="form-check-label">- ${r1.title}</label>
+                                        </div>`;
+                    for (var r2 of r1.children) {
+                        var checked2 = msg.data.listRelation.filter(i => i.categoryId == r2.id).length > 0 ? "checked" : "";
+
+                        template += `<div class='form-check' > 
+                                        <input class="form-check-input" value='${r2.id}' ${checked2} type="checkbox">
+                                        <label class="form-check-label">-- ${r2.title}</label>
+                                        </div>`;
+
+                    }
+                }
+            }
+
+
+            jQuery('#contentCategories').html(template);
+
         });
     },
     closeRight: function () {
@@ -1082,14 +1140,85 @@ var Home = {
         jQuery('#right').attr("class", "col-md-4");
         jQuery('#right').attr("style", "");
 
-    },
-    saveRight: function () {
+        jQuery('#contentTitle').val('');
+        jQuery('#contentUrlRef').val('');
+        jQuery('#contentDescription').val('');
+        jQuery('#contentThumbnail').val('');
+        jQuery('#contentImgThumbnail').attr("src", '');
 
     },
+    saveRight: function () {
+        if (Home._contentId == null || Home._contentId == 'undefined')
+            Home._contentId = App.guidEmpty();
+
+        var categories = [];
+        $.each($("#contentCategories input:checked"), function () {
+            categories.push(jQuery(this).val());
+        });
+
+        jQuery.ajax({
+            method: "POST",
+            url: "/Content/CreateOrUpdate",
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify({
+                title: jQuery('#contentTitle').val(),
+                urlRef: jQuery('#contentUrlRef').val(),
+                thumbnail: jQuery('#contentThumbnail').val(),
+                description: jQuery('#contentDescription').val(),
+                categoryIds: categories,
+                parentId: App.guidEmpty(),
+                id: Home._contentId
+            })
+        }).done(function (msg) {
+            if (msg.code == 0) {
+                Home.loadContent();
+            } else {
+                alert(msg.message);
+            }
+        });
+    },
     deleteRight: function () {
-        Home._contentId = App.guidEmpty();
-        jQuery('#mid').attr("class", "col-md-5");
-        jQuery('#right').attr("class", "col-md-4");
-        jQuery('#right').attr("style", "");
+        var okDelete = confirm("Do you want to Delete?");
+        if (!okDelete) return;
+
+        jQuery.ajax({
+            method: "POST",
+            url: "/Content/Delete",
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify({ id: Home._contentId })
+        }).done(function (msg) {
+            if (msg.code == 0) {
+
+                Home.loadContent();
+
+                Home._contentId = App.guidEmpty();
+
+                Home.closeRight();
+
+            } else {
+                alert(msg.message);
+            }
+        });
+
+    },
+    crawlRight: function (sender) {
+        YoutuberCrawler.askUrl(function (data) {
+
+            Home.addNewRight();
+
+            jQuery('#contentTitle').val(data.title);
+            jQuery('#contentUrlRef').val(data.urlRef);
+            jQuery('#contentDescription').val(data.description);
+            jQuery('#contentThumbnail').val(data.thumbnail);
+            jQuery('#contentImgThumbnail').attr("src", data.thumbnail);
+            jQuery('#contentOpenUrlRef').attr("href", data.urlRef);
+
+            jQuery(sender).text('Crawl new');
+
+        }, function () {
+            jQuery(sender).text('Crawling ...');
+        }, false);
     }
 }

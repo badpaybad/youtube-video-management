@@ -9,7 +9,8 @@
 @section BodyBreadcrumb{
     @if (user != null)
     {
-        <button onclick="Home.addNewRight()">Add new</button>
+        <button onclick="Home.addNewRight()">Add new content</button>
+        <button onclick="Home.crawlRight(this)">Crawl content</button>
     }
 }
 @if (user == null)
@@ -26,7 +27,7 @@ else
 {
     <div class="row">
         <div class="col-md-3">
-            <div><b>DANH MỤC</b></div>
+            <div><b>Category</b> <button onclick="Home.addNewCategory()">Add new</button></div>
             <div id="categoryTree"></div>
         </div>
         <div id="mid" class="col-md-9">
@@ -34,7 +35,45 @@ else
         </div>
         <div id="right" class="display:none">
             <div style="clear:both">
-                <button onclick="Home.closeRight()" style="float:left">[X]</button>
+                <button onclick="Home.closeRight()" style="float:left">Close</button>
+                <button onclick="Home.deleteRight()" style="float:right">Delete</button>
+                <button onclick="Home.saveRight()" style="float:right">Save</button>
+            </div>
+            <hr style="clear:both" />
+            <div>
+                <img id="contentImgThumbnail" src="" style="max-width:100%; height:150px;" />
+            </div>
+            <div>
+                Youtube url <a id="contentOpenUrlRef" target="_blank" href="">Goto</a>
+            </div>
+            <div>
+                <textarea id="contentUrlRef" style="width:100%"></textarea>
+            </div>
+            <div>
+                Thumbnail
+            </div>
+            <div>
+                <textarea id="contentThumbnail" style="width:100%"></textarea>
+            </div>
+            <div>
+                Title
+            </div>
+            <div>
+                <textarea id="contentTitle" style="width:100%" rows="3"></textarea>
+            </div>
+            <div>
+                Description
+            </div>
+            <div>
+                <textarea id="contentDescription" style="width:100%" rows="5"></textarea>
+            </div>
+            <div>Category</div>
+            <div id="contentCategories">
+
+            </div>
+            <hr style="clear:both" />
+            <div style="clear:both">
+                <button onclick="Home.closeRight()" style="float:left">Close</button>
                 <button onclick="Home.deleteRight()" style="float:right">Delete</button>
                 <button onclick="Home.saveRight()" style="float:right">Save</button>
             </div>
