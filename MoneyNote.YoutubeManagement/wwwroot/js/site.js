@@ -1074,12 +1074,6 @@ var Home = {
             thumbnail: ""
         };
 
-        if (Home._selectedCategory == 0 || Home._selectedCategory == null) {
-            filter.categoryIds = [];
-        } else {
-            filter.categoryIds = [Home._selectedCategory];
-        }
-
         jQuery.ajax({
             method: "POST",
             url: "/Content/SelectAll",
