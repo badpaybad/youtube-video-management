@@ -27,7 +27,20 @@ else
 {
     <div class="row">
         <div class="col-md-3">
-            <div><b>Category</b> <button onclick="Home.addNewCategory()">Add new</button></div>
+            <div><b>Category</b> <button onclick="Home.addNewLeft()">Add new</button></div>
+            <div id="categoryInfo" style="display:none; clear:both">
+                <div>Parent category</div>
+                <select id="categoryDrlParent" style="width:100%"></select>
+                <div>Title</div>
+                <div>
+                    <textarea id="categoryTitle" style="width:100%"></textarea>
+                </div>
+                <div>
+                    <button onclick="Home.closeLeft()">Close</button>
+                    <button onclick="Home.saveLeft()">Save</button>
+                    <button onclick="Home.deleteLeft()">Delete</button>
+                </div>
+            </div>
             <div id="categoryTree"></div>
         </div>
         <div id="mid" class="col-md-9">

@@ -943,6 +943,114 @@ var Home = {
         Home.loadCategoryTree();
         Home.loadContent();
     },
+    findCategoryById: function (id) {
+        for (var i of Home._allCategory) {
+            if (i.id == id) return i;
+        }
+
+        return null;
+    },
+    _categoryId: null,
+    addNewLeft: function () {
+        Home._categoryId = App.guidEmpty();
+        jQuery('#categoryInfo').attr("style", "");
+
+        jQuery('#categoryTitle').val('');
+        var template = ``;        
+        template += `<option value='${App.guidEmpty()}' >Root</option>`;
+
+        for (var r of Home._allCategory.filter(i => i.parentId == App.guidEmpty())) {
+            r.children = Home._allCategory.filter(i => i.parentId == r.id);
+            
+            template += `<option value='${r.id}' >${r.title}</option>`;
+
+            for (var r1 of r.children) {
+                r1.children = Home._allCategory.filter(i => i.parentId == r1.id);
+                
+                template += `<option value='${r1.id}' >- ${r1.title}</option>`;
+                for (var r2 of r1.children) {
+                    
+                    template += `<option value='${r2.id}' >-- ${r2.title}</option>`;
+                }
+            }
+        }
+
+        jQuery('#categoryDrlParent').html(template);
+    },
+    closeLeft: function () {
+        jQuery('#categoryInfo').attr("style", "display:none");
+    },
+    saveLeft: function () {
+        if (Home._categoryId == null || Home._categoryId == 'undefined') {
+            Home._categoryId = App.guidEmpty()
+        }
+
+        jQuery.ajax({
+            method: "POST",
+            url: "/Category/CreateOrUpdate",
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify({
+                title: jQuery('#categoryTitle').val(),
+                parentId: jQuery('#categoryDrlParent').val(),
+                id: Home._categoryId
+            })
+        }).done(function (msg) {
+            if (msg.code == 0) {
+                Home.loadCategoryTree();                
+            } else {
+                alert(msg.message);
+            }
+        });
+    },
+    deleteLeft: function () {
+        if (Home._categoryId == null || Home._categoryId == App.guidEmpty()) return;
+        var okDelete = confirm("Do you want to Delete?");
+        if (!okDelete) return;
+
+        jQuery.ajax({
+            method: "POST",
+            url: "/Category/Delete",
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify({ id: Home._categoryId })
+        }).done(function (msg) {
+            if (msg.code == 0) {
+                Home.loadCategoryTree();
+                Home.closeLeft();
+            } else {
+                alert(msg.message);
+            }
+        });
+    },
+    editCategory: function (id) {
+        Home._categoryId = id;
+        jQuery('#categoryInfo').attr("style", "");
+
+        var cat = Home.findCategoryById(id);
+        jQuery('#categoryTitle').val(cat.title);
+        var template = ``;
+        var selectedRoot = cat.parentId == App.guidEmpty() ? "selected" : "";
+        template += `<option value='${App.guidEmpty()}' ${selectedRoot} >Root</option>`;
+
+        for (var r of Home._allCategory.filter(i => i.parentId == App.guidEmpty())) {
+            r.children = Home._allCategory.filter(i => i.parentId == r.id);
+            var selected = r.id == cat.parentId ? "selected" : "";
+            template += `<option value='${r.id}' ${selected} >${r.title}</option>`;
+
+            for (var r1 of r.children) {
+                r1.children = Home._allCategory.filter(i => i.parentId == r1.id);
+                var selected1 = r1.id == cat.parentId ? "selected":"";
+                template += `<option value='${r1.id}' ${selected1}>- ${r1.title}</option>`;
+                for (var r2 of r1.children) {
+                    var selected2 = r2.id == cat.parentId ? "selected":"";
+                    template += `<option value='${r2.id}' ${selected2} >-- ${r2.title}</option>`;
+                }
+            }
+        }
+
+        jQuery('#categoryDrlParent').html(template);
+    },
     loadCategoryTree: function () {
         jQuery.ajax({
             method: "POST",
@@ -966,18 +1074,18 @@ var Home = {
                 r.children = Home._allCategory.filter(i => i.parentId == r.id);
                 idsValid.push(r.id);
                 template += `<div>
-<button onclick='Home.deleteCategory("${r.id}")'>[X]</button> <button onclick='Home.editCategory("${r.id}")'>[...]</button>
+<button onclick='Home.editCategory("${r.id}")'>...</button>
 <a href='javascript:void(0)'  onclick='Home.selectCategory("${r.id}")' style='padding-left:5px'> ${r.title} (${r.itemsCount})</a></div>`;
                 for (var r1 of r.children) {
                     r1.children = Home._allCategory.filter(i => i.parentId == r1.id);
                     idsValid.push(r1.id);
                     template += `<div>
-<button onclick='Home.deleteCategory("${r.id}")'>[X]</button> <button onclick='Home.editCategory("${r.id}")'>[...]</button>
+<button onclick='Home.editCategory("${r1.id}")'>...</button>
 -<a href='javascript:void(0)'  onclick='Home.selectCategory("${r1.id}")' style='padding-left:5px'> ${r1.title} (${r1.itemsCount})</a></div>`;
                     for (var r2 of r1.children) {
                         idsValid.push(r2.id);
                         template += `<div>
-<button onclick='Home.deleteCategory("${r.id}")'>[X]</button> <button onclick='Home.editCategory("${r.id}")'>[...]</button>
+<button onclick='Home.editCategory("${r2.id}")'>...</button>
 --<a href='javascript:void(0)'  onclick='Home.selectCategory("${r2.id}")' style='padding-left:10px'>${r2.title} (${r2.itemsCount})</a></div>`;
                     }
                 }
@@ -1157,6 +1265,37 @@ var Home = {
 
 
         jQuery('#contentPublised').prop("checked", false);
+
+
+        var template = ``;
+        for (var r of Home._allCategory.filter(i => i.parentId == App.guidEmpty())) {
+            r.children = Home._allCategory.filter(i => i.parentId == r.id);
+           
+            template += `<div class='form-check' >
+                                        <input class="form-check-input" value='${r.id}' type="checkbox">
+                                        <label class="form-check-label">${r.title}</label>
+                                        </div>`;
+
+            for (var r1 of r.children) {
+                r1.children = Home._allCategory.filter(i => i.parentId == r1.id);
+             
+                template += `<div class='form-check'  > 
+                                        <input class="form-check-input" value='${r1.id}'  type="checkbox">
+                                        <label class="form-check-label">- ${r1.title}</label>
+                                        </div>`;
+                for (var r2 of r1.children) {
+                   
+                    template += `<div class='form-check' > 
+                                        <input class="form-check-input" value='${r2.id}'  type="checkbox">
+                                        <label class="form-check-label">-- ${r2.title}</label>
+                                        </div>`;
+
+                }
+            }
+        }
+
+
+        jQuery('#contentCategories').html(template);
 
     },
     saveRight: function () {
