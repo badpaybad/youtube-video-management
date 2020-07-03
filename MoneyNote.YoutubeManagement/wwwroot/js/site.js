@@ -1004,7 +1004,7 @@ var Home = {
         });
     },
     deleteLeft: function () {
-        if (Home._categoryId == null || Home._categoryId == App.guidEmpty()) return;
+        if (Home._categoryId == null || Home._categoryId == 'undefined') return;
         var okDelete = confirm("Do you want to Delete?");
         if (!okDelete) return;
 
@@ -1093,9 +1093,9 @@ var Home = {
             if (idsValid.length > 0) {
                 var orphanItems = Home._allCategory.filter(i => !idsValid.includes(i.id));
                 template += `<hr>`;
-                for (var r in orphanItems) {
-                    template += `div>
-<button onclick='Home.deleteCategory("${r.id}")'>[X]</button> <button onclick='Home.editCategory("${r.id}")'>[...]</button> 
+                for (var r of orphanItems) {
+                    template += `<div>
+<button onclick='Home.editCategory("${r.id}")'>...</button> 
 <a href='javascript:void(0)'  onclick='Home.selectCategory("${r.id}")' style='padding-left:5px'> ${r.title} (${r.itemsCount})</a></div>`;
                 }
             }
