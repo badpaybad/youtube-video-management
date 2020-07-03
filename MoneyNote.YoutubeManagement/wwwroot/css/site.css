@@ -6,3 +6,10 @@
     button:hover {
         background-color: #aaa;
     }
+
+.container{
+    width:99%!important;
+    padding:0 5px 5px 0!important;
+    margin:auto!important;
+    max-width:99%!important;
+}

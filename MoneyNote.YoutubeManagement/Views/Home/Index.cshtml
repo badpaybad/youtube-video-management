@@ -4,7 +4,7 @@
 
 }
 @section BodyTitle{
-    ULIFE - @MoneyNote.YoutubeManagement.Configs.Config.Slogan
+    @*ULIFE - @MoneyNote.YoutubeManagement.Configs.Config.Slogan*@
 }
 @section BodyBreadcrumb{
     @if (user != null)
@@ -26,8 +26,8 @@
 else
 {
     <div class="row">
-        <div class="col-md-3">
-            <div><b>Category</b> <button onclick="Home.addNewLeft()">Add new</button></div>
+        <div class="col-md-2">
+            <div><button onclick="Home.addNewLeft()">Add new</button> <b>Category</b> </div>
             <div id="categoryInfo" style="display:none; clear:both">
                 <div>Parent category</div>
                 <select id="categoryDrlParent" style="width:100%"></select>
@@ -43,7 +43,7 @@ else
             </div>
             <div id="categoryTree"></div>
         </div>
-        <div id="mid" class="col-md-9">
+        <div id="mid" class="col-md-10">
             <div id="content"></div>
         </div>
         <div id="right" style="display:none">

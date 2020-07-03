@@ -1142,17 +1142,17 @@ var Home = {
 
             var template = ``;
 
-            var i, j, chunk = 3;
+            var i, j, chunk = 4;
             for (i = 0, j = msg.data.data.length; i < j; i += chunk) {
                 var temparray = msg.data.data.slice(i, i + chunk);
                 template += `<div style="clear:both; ">`
                 for (var itm of temparray) {
                     var publised = itm.isDeleted == 1 ? "Publised" : "Unpublish";
-                    template += `<div style='width:32%;max-width:32%;float:left; padding-left:1%;padding-bottom:10px;'>
-                                    <img src='${itm.thumbnail}' alt='${itm.title}' style='max-width:99%; height:150px'/>
-                                    <div style='width:95%; clear:both'>                                                                             
-                                           <div> <button onclick='Home.editContent("${itm.id}")'>...</button> ${publised} | views: ${itm.countView} | <a target='_blank' href='${itm.urlRef}'>Origin</a></div>
-                                            ${itm.title}
+                    template += `<div style='width:24.9%;max-width:24.9%;float:left; padding-left:1%;padding-bottom:40px;'>
+                                    <img src='${itm.thumbnail}' alt='${itm.title}' style='width:96%; height:175px'/>
+                                    <div style='width:95%; clear:both; padding-left:3px;'>                                                                             
+                                           <div style='font-style: italic;'> <button onclick='Home.editContent("${itm.id}")'>...</button> ${publised} | views: ${itm.countView} | <a target='_blank' href='${itm.urlRef}'>Origin</a></div>
+                                            ${itm.title.replace(/^(.{65}[^\s]*).*/, "$1 ...")}
                                             
                                     </div>
                               </div>`;
@@ -1192,7 +1192,7 @@ var Home = {
 
             var content = msg.data.data[0];
 
-            jQuery('#mid').attr("class", "col-md-5");
+            jQuery('#mid').attr("class", "col-md-6");
             jQuery('#right').attr("class", "col-md-4");
             jQuery('#right').attr("style", "");
 
@@ -1247,13 +1247,13 @@ var Home = {
         });
     },
     closeRight: function () {
-        jQuery('#mid').attr("class", "col-md-9");
+        jQuery('#mid').attr("class", "col-md-10");
         jQuery('#right').attr("class", "");
         jQuery('#right').attr("style", "display:none");
     },
     addNewRight: function () {
         Home._contentId = App.guidEmpty();
-        jQuery('#mid').attr("class", "col-md-5");
+        jQuery('#mid').attr("class", "col-md-6");
         jQuery('#right').attr("class", "col-md-4");
         jQuery('#right').attr("style", "");
 
