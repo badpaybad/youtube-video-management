@@ -1151,9 +1151,9 @@ var Home = {
                     template += `<div style='width:32%;max-width:32%;float:left; padding-left:1%;padding-bottom:10px;'>
                                     <img src='${itm.thumbnail}' alt='${itm.title}' style='max-width:99%; height:150px'/>
                                     <div style='width:95%; clear:both'>                                                                             
-                                            <button onclick='Home.editContent("${itm.id}")'>...</button>
+                                           <div> <button onclick='Home.editContent("${itm.id}")'>...</button> ${publised} | views: ${itm.countView} | <a target='_blank' href='${itm.urlRef}'>Origin</a></div>
                                             ${itm.title}
-                                            <div> ${publised} | views: ${itm.countView} | <a target='_blank' href='${itm.urlRef}'>Origin</a></div>
+                                            
                                     </div>
                               </div>`;
                 }
