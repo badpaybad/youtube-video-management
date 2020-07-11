@@ -9,6 +9,9 @@ namespace MoneyNote.Identity.Enities
     {
         public string Title { get; set; }
         public string Thumbnail { get; set; }
+        
+        public int ThumbnailWidth { get; set; }
+        public int ThumbnailHeight { get; set; }
         public string Description { get; set; }
         public string UrlRef { get; set; }
 
@@ -23,6 +26,8 @@ namespace MoneyNote.Identity.Enities
             public Guid ParentId { get; set; }
             public string Title { get; set; }
             public string Thumbnail { get; set; }
+            public int ThumbnailWidth { get; set; }
+            public int ThumbnailHeight { get; set; }
             public string Description { get; set; }
             public string UrlRef { get; set; }
 

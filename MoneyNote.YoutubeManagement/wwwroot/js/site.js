@@ -1149,7 +1149,7 @@ var Home = {
                 for (var itm of temparray) {
                     var publised = itm.isDeleted == 1 ? "Publised" : "Unpublish";
                     template += `<div style='width:24.9%;max-width:24.9%;float:left; padding-left:1%;padding-bottom:40px;'>
-                                    <img src='${itm.thumbnail}' alt='${itm.title}' style='width:96%; height:175px'/>
+                                    <img src='${itm.thumbnail}' alt='${itm.title}' title='${itm.thumbnailWidth}x${itm.thumbnailHeight}' style='width:96%; height:175px'/>
                                     <div style='width:95%; clear:both; padding-left:3px;'>                                                                             
                                            <div style='font-style: italic;'> <button onclick='Home.editContent("${itm.id}")'>...</button> ${publised} | views: ${itm.countView} | <a target='_blank' href='${itm.urlRef}'>Origin</a></div>
                                             ${itm.title.replace(/^(.{65}[^\s]*).*/, "$1 ...")}
@@ -1203,6 +1203,9 @@ var Home = {
             jQuery('#contentThumbnail').val(content.thumbnail);
             jQuery('#contentImgThumbnail').attr("src", content.thumbnail);
             jQuery('#contentOpenUrlRef').attr("href", content.urlRef);
+
+            jQuery('#contentThumbnailWidth').val(content.thumbnailWidth);
+            jQuery('#contentThumbnailHeight').val(content.thumbnailHeight);
 
             if (content.isDeleted == 1) {
                 jQuery('#contentPublished').prop('checked', true);
@@ -1320,6 +1323,8 @@ var Home = {
                 title: jQuery('#contentTitle').val(),
                 urlRef: jQuery('#contentUrlRef').val(),
                 thumbnail: jQuery('#contentThumbnail').val(),
+                thumbnailWidth: parseInt( jQuery('#contentThumbnailWidth').val()),
+                thumbnailHeight: parseInt(jQuery('#contentThumbnailHeight').val()),
                 description: jQuery('#contentDescription').val(),
                 isDeleted: isDeleted==true?1:0,
                 categoryIds: categories,
@@ -1370,6 +1375,9 @@ var Home = {
             jQuery('#contentThumbnail').val(data.thumbnail);
             jQuery('#contentImgThumbnail').attr("src", data.thumbnail);
             jQuery('#contentOpenUrlRef').attr("href", data.urlRef);
+
+            jQuery('#contentThumbnailWidth').val(data.thumbnailWidth);
+            jQuery('#contentThumbnailHeight').val(data.thumbnailHeight);
             
             jQuery(sender).text('Crawl new');
 
