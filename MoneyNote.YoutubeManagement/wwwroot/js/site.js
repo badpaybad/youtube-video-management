@@ -1207,6 +1207,9 @@ var Home = {
             jQuery('#contentThumbnailWidth').val(content.thumbnailWidth);
             jQuery('#contentThumbnailHeight').val(content.thumbnailHeight);
 
+            jQuery('#contentVideoWidth').val(content.videoWidth);
+            jQuery('#contentVideoHeight').val(content.videoHeight);
+
             if (content.isDeleted == 1) {
                 jQuery('#contentPublished').prop('checked', true);
             } else {
@@ -1325,6 +1328,8 @@ var Home = {
                 thumbnail: jQuery('#contentThumbnail').val(),
                 thumbnailWidth: parseInt( jQuery('#contentThumbnailWidth').val()),
                 thumbnailHeight: parseInt(jQuery('#contentThumbnailHeight').val()),
+                videoWidth: parseInt(jQuery('#contentVideoWidth').val()),
+                videoHeight: parseInt(jQuery('#contentVideoHeight').val()),
                 description: jQuery('#contentDescription').val(),
                 isDeleted: isDeleted==true?1:0,
                 categoryIds: categories,
@@ -1378,6 +1383,9 @@ var Home = {
 
             jQuery('#contentThumbnailWidth').val(data.thumbnailWidth);
             jQuery('#contentThumbnailHeight').val(data.thumbnailHeight);
+
+            jQuery('#contentVideoWidth').val(data.videoWidth);
+            jQuery('#contentVideoHeight').val(data.videoHeight);
             
             jQuery(sender).text('Crawl new');
 

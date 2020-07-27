@@ -26,8 +26,10 @@ namespace MoneyNote.Identity.Enities.Extensions
 
         public static CmsContent CalculateThumbnail(this CmsContent content)
         {
+            if (content.ThumbnailWidth != 0 && content.ThumbnailHeight != 0) return content;
+
             var f = GetFile(content.Thumbnail);
-            if(f==null || f== Stream.Null)
+            if (f == null || f == Stream.Null)
             {
                 return content;
             }

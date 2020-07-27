@@ -12,6 +12,10 @@ namespace MoneyNote.Identity.Enities
         
         public int ThumbnailWidth { get; set; }
         public int ThumbnailHeight { get; set; }
+
+        public int VideoWidth { get; set; }
+        public int VideoHeight { get; set; }
+
         public string Description { get; set; }
         public string UrlRef { get; set; }
 
@@ -28,6 +32,10 @@ namespace MoneyNote.Identity.Enities
             public string Thumbnail { get; set; }
             public int ThumbnailWidth { get; set; }
             public int ThumbnailHeight { get; set; }
+
+            public int VideoWidth { get; set; }
+            public int VideoHeight { get; set; }
+
             public string Description { get; set; }
             public string UrlRef { get; set; }
 

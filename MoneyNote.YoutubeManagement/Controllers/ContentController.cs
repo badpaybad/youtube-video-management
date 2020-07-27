@@ -55,6 +55,8 @@ namespace MoneyNote.YoutubeManagement.Controllers
                     exited.IsDeleted = data.IsDeleted;
                     exited.ThumbnailWidth = data.ThumbnailWidth;
                     exited.ThumbnailHeight = data.ThumbnailHeight;
+                    exited.VideoWidth = data.VideoWidth;
+                    exited.VideoHeight = data.VideoHeight;
                 }
 
                 db.SaveChanges();
@@ -124,13 +126,21 @@ namespace MoneyNote.YoutubeManagement.Controllers
 
                     var result = httpClient.GetStringAsync(request.url).GetAwaiter().GetResult();
 
+                    int.TryParse(FindYoutubeContent(result, "<meta property=\"og:image:width\" content=\"", "\">"), out int tw);
+                    int.TryParse(FindYoutubeContent(result, "<meta property=\"og:image:height\" content=\"", "\">"), out int th);
+                    int.TryParse(FindYoutubeContent(result, "<meta property=\"og:video:width\" content=\"", "\">"), out int vw);
+                    int.TryParse(FindYoutubeContent(result, "<meta property=\"og:video:height\" content=\"", "\">"), out int vh);
+
                     CmsContent cmsContent = new CmsContent
                     {
                         Title = FindYoutubeContent(result, "<meta property=\"og:title\" content=\"", "\">"),
                         Thumbnail = FindYoutubeContent(result, "<meta property=\"og:image\" content=\"", "\">"),
                         UrlRef = FindYoutubeContent(result, "<meta property=\"og:url\" content=\"", "\">"),
                         Description = FindYoutubeContent(result, "\\\"description\\\":{\\\"simpleText\\\":\\\"", "\\\"}"),
-                       
+                        ThumbnailHeight = th,
+                        ThumbnailWidth = tw,
+                        VideoHeight = vh,
+                        VideoWidth = vw,
                     };
 
                     cmsContent = cmsContent.CalculateThumbnail();
@@ -170,7 +180,9 @@ namespace MoneyNote.YoutubeManagement.Controllers
             var temp = src.Substring(idx + begin.Length);
             idx = temp.IndexOf(end);
 
-            return temp.Substring(0, idx).Replace("\\\\n", " ").Replace("\\n", " ").Replace("\\\\", " ").Replace("\\", " ");
+            var data = temp.Substring(0, idx).Replace("\\\\n", " ").Replace("\\n", " ").Replace("\\\\", " ").Replace("\\", " ");
+            data = data.Trim(new char[] { ' ', '\\', '/', '"', '\r', '\n' });
+            return data;
         }
     }
 }
