@@ -1,5 +1,6 @@
 ﻿using MoneyNote.Identity;
 using MoneyNote.Identity.Enities;
+using MoneyNote.Identity.Enities.Extensions;
 using MoneyNote.YoutubeManagement.Models;
 using System;
 using System.Collections.Generic;
@@ -104,7 +105,10 @@ namespace MoneyNote.YoutubeManagement.Repository
 
                 //cbeadc96-a21a-4ab8-a69b-8a56c893ffce
             }
-
+            data = data.Select((i) =>
+            {
+                return (i.ThumbnailWidth == 0 || i.ThumbnailHeight == 0) ? i.CalculateThumbnail() : i;
+            }).ToList();
             return new ContentJsGridResult
             {
                 data = data,

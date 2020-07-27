@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MoneyNote.Identity;
 using MoneyNote.Identity.Enities;
+using MoneyNote.Identity.Enities.Extensions;
 using MoneyNote.Identity.PermissionSchemes;
 using MoneyNote.YoutubeManagement.Models;
 using MoneyNote.YoutubeManagement.Repository;
@@ -23,7 +24,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
         }
         public IActionResult SelectAll([FromBody] JsGridFilter filter)
         {
-          
+
             return Json(new JsonResponse<ContentJsGridResult>
             {
                 data = new YoutubeContentRepository().ListContent(filter)
@@ -34,6 +35,8 @@ namespace MoneyNote.YoutubeManagement.Controllers
         {
             if (string.IsNullOrEmpty(data.Title)) return Json(new JsonResponse<string> { code = 1, message = "Title can not be empty" });
             if (data.Id == null || data.Id == Guid.Empty) data.Id = Guid.NewGuid();
+
+            data = data.CalculateThumbnail();
 
             using (var db = new MoneyNoteDbContext())
             {
@@ -50,6 +53,8 @@ namespace MoneyNote.YoutubeManagement.Controllers
                     exited.UrlRef = data.UrlRef;
                     exited.Description = data.Description;
                     exited.IsDeleted = data.IsDeleted;
+                    exited.ThumbnailWidth = data.ThumbnailWidth;
+                    exited.ThumbnailHeight = data.ThumbnailHeight;
                 }
 
                 db.SaveChanges();
@@ -74,7 +79,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
         {
             using (var db = new MoneyNoteDbContext())
             {
-                data = db.CmsContents.FirstOrDefault(i => i.Id == data.Id );
+                data = db.CmsContents.FirstOrDefault(i => i.Id == data.Id);
                 if (data != null)
                 {
                     db.CmsContents.Remove(data);
@@ -128,6 +133,8 @@ namespace MoneyNote.YoutubeManagement.Controllers
                        
                     };
 
+                    cmsContent = cmsContent.CalculateThumbnail();
+
                     if (request.autoSave)
                     {
                         using (var db = new MoneyNoteDbContext())
@@ -163,7 +170,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
             var temp = src.Substring(idx + begin.Length);
             idx = temp.IndexOf(end);
 
-            return temp.Substring(0, idx).Replace("\\\\n"," ").Replace("\\n", " ").Replace("\\\\", " ").Replace("\\", " ");
+            return temp.Substring(0, idx).Replace("\\\\n", " ").Replace("\\n", " ").Replace("\\\\", " ").Replace("\\", " ");
         }
     }
 }
