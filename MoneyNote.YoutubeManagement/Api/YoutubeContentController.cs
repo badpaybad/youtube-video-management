@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MoneyNote.Identity;
@@ -14,7 +15,8 @@ namespace MoneyNote.YoutubeManagement.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    [ClaimAndValidatePermission("*", "ApiYoutubeContent", true)]
+    //[ClaimAndValidatePermission("*", "ApiYoutubeContent", true)]
+    [AllowAnonymous]
     [ApiExplorerSettings(IgnoreApi = false)]   
     public class YoutubeContentController : ControllerBase
     {

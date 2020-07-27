@@ -125,6 +125,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                         Thumbnail = FindYoutubeContent(result, "<meta property=\"og:image\" content=\"", "\">"),
                         UrlRef = FindYoutubeContent(result, "<meta property=\"og:url\" content=\"", "\">"),
                         Description = FindYoutubeContent(result, "\\\"description\\\":{\\\"simpleText\\\":\\\"", "\\\"}"),
+                       
                     };
 
                     if (request.autoSave)
