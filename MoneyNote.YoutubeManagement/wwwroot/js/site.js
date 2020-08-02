@@ -1409,3 +1409,11 @@ var Home = {
         }, false);
     }
 }
+
+jQuery(document).ajaxStart(function () {
+    jQuery('#loading').show();
+});
+
+jQuery(document).ajaxStop(function () {
+    jQuery('#loading').hide();
+});
