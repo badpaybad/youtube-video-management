@@ -57,6 +57,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                     exited.ThumbnailHeight = data.ThumbnailHeight;
                     exited.VideoWidth = data.VideoWidth;
                     exited.VideoHeight = data.VideoHeight;
+                    exited.IsPublished = data.IsPublished;
                 }
 
                 db.SaveChanges();

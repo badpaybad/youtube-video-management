@@ -956,20 +956,20 @@ var Home = {
         jQuery('#categoryInfo').attr("style", "");
 
         jQuery('#categoryTitle').val('');
-        var template = ``;        
+        var template = ``;
         template += `<option value='${App.guidEmpty()}' >Root</option>`;
 
         for (var r of Home._allCategory.filter(i => i.parentId == App.guidEmpty())) {
             r.children = Home._allCategory.filter(i => i.parentId == r.id);
-            
+
             template += `<option value='${r.id}' >${r.title}</option>`;
 
             for (var r1 of r.children) {
                 r1.children = Home._allCategory.filter(i => i.parentId == r1.id);
-                
+
                 template += `<option value='${r1.id}' >- ${r1.title}</option>`;
                 for (var r2 of r1.children) {
-                    
+
                     template += `<option value='${r2.id}' >-- ${r2.title}</option>`;
                 }
             }
@@ -997,7 +997,7 @@ var Home = {
             })
         }).done(function (msg) {
             if (msg.code == 0) {
-                Home.loadCategoryTree();                
+                Home.loadCategoryTree();
             } else {
                 alert(msg.message);
             }
@@ -1040,10 +1040,10 @@ var Home = {
 
             for (var r1 of r.children) {
                 r1.children = Home._allCategory.filter(i => i.parentId == r1.id);
-                var selected1 = r1.id == cat.parentId ? "selected":"";
+                var selected1 = r1.id == cat.parentId ? "selected" : "";
                 template += `<option value='${r1.id}' ${selected1}>- ${r1.title}</option>`;
                 for (var r2 of r1.children) {
-                    var selected2 = r2.id == cat.parentId ? "selected":"";
+                    var selected2 = r2.id == cat.parentId ? "selected" : "";
                     template += `<option value='${r2.id}' ${selected2} >-- ${r2.title}</option>`;
                 }
             }
@@ -1128,9 +1128,9 @@ var Home = {
                 filter.findRootItem = true;
             } else {
                 filter.categoryIds = [Home._selectedCategory];
-            }            
+            }
         }
-        
+
 
         jQuery.ajax({
             method: "POST",
@@ -1147,11 +1147,17 @@ var Home = {
                 var temparray = msg.data.data.slice(i, i + chunk);
                 template += `<div style="clear:both; ">`
                 for (var itm of temparray) {
+
+                    var originUrl = itm.urlRef;
+                    if (originUrl == null || originUrl == '' || originUrl == 'undefined') {
+                        originUrl = itm.thumbnail;
+                    }
+
                     var publised = itm.isDeleted == 1 ? "Publised" : "Unpublish";
                     template += `<div style='width:24.9%;max-width:24.9%;float:left; padding-left:1%;padding-bottom:40px;'>
                                     <img src='${itm.thumbnail}' alt='${itm.title}' title='${itm.thumbnailWidth}x${itm.thumbnailHeight}' style='width:96%; height:175px'/>
                                     <div style='width:95%; clear:both; padding-left:3px;'>                                                                             
-                                           <div style='font-style: italic;'> <button onclick='Home.editContent("${itm.id}")'>...</button> ${publised} | views: ${itm.countView} | <a target='_blank' href='${itm.urlRef}'>Origin</a></div>
+                                           <div style='font-style: italic;'> <button onclick='Home.editContent("${itm.id}")'>...</button> ${publised} | views: ${itm.countView} | <a target='_blank' href='${originUrl}'>Origin</a></div>
                                             ${itm.title.replace(/^(.{65}[^\s]*).*/, "$1 ...")}
                                             
                                     </div>
@@ -1276,7 +1282,7 @@ var Home = {
         var template = ``;
         for (var r of Home._allCategory.filter(i => i.parentId == App.guidEmpty())) {
             r.children = Home._allCategory.filter(i => i.parentId == r.id);
-           
+
             template += `<div class='form-check' >
                                         <input class="form-check-input" value='${r.id}' type="checkbox">
                                         <label class="form-check-label">${r.title}</label>
@@ -1284,13 +1290,13 @@ var Home = {
 
             for (var r1 of r.children) {
                 r1.children = Home._allCategory.filter(i => i.parentId == r1.id);
-             
+
                 template += `<div class='form-check'  > 
                                         <input class="form-check-input" value='${r1.id}'  type="checkbox">
                                         <label class="form-check-label">- ${r1.title}</label>
                                         </div>`;
                 for (var r2 of r1.children) {
-                   
+
                     template += `<div class='form-check' > 
                                         <input class="form-check-input" value='${r2.id}'  type="checkbox">
                                         <label class="form-check-label">-- ${r2.title}</label>
@@ -1312,9 +1318,9 @@ var Home = {
         $.each($("#contentCategories input:checked"), function () {
             categories.push(jQuery(this).val());
         });
-        var isDeleted = $("#contentPublished input:checked").length > 0;
-        if (isDeleted == false) {
-            isDeleted = $("#contentPublished").prop("checked");
+        var isPublished = $("#contentPublished input:checked").length > 0;
+        if (isPublished == false) {
+            isPublished = $("#contentPublished").prop("checked");
         }
 
         jQuery.ajax({
@@ -1326,12 +1332,13 @@ var Home = {
                 title: jQuery('#contentTitle').val(),
                 urlRef: jQuery('#contentUrlRef').val(),
                 thumbnail: jQuery('#contentThumbnail').val(),
-                thumbnailWidth: parseInt( jQuery('#contentThumbnailWidth').val()),
-                thumbnailHeight: parseInt(jQuery('#contentThumbnailHeight').val()),
-                videoWidth: parseInt(jQuery('#contentVideoWidth').val()),
-                videoHeight: parseInt(jQuery('#contentVideoHeight').val()),
+                thumbnailWidth: parseInt('0'+ jQuery('#contentThumbnailWidth').val()),
+                thumbnailHeight: parseInt(jQuery('0' +'#contentThumbnailHeight').val()),
+                videoWidth: parseInt(jQuery('0' +'#contentVideoWidth').val()),
+                videoHeight: parseInt(jQuery('0' +'#contentVideoHeight').val()),
                 description: jQuery('#contentDescription').val(),
-                isDeleted: isDeleted==true?1:0,
+                isDeleted: isPublished == true ? 0 : 0,
+                isPublished: isPublished == true ? 1 : 0,
                 categoryIds: categories,
                 parentId: App.guidEmpty(),
                 id: Home._contentId
@@ -1386,7 +1393,7 @@ var Home = {
 
             jQuery('#contentVideoWidth').val(data.videoWidth);
             jQuery('#contentVideoHeight').val(data.videoHeight);
-            
+
             jQuery(sender).text('Crawl new');
 
         }, function () {

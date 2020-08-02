@@ -21,6 +21,8 @@ namespace MoneyNote.Identity.Enities
 
         public long CountView { get; set; }
 
+        public bool IsPublished { get; set; }
+
         [NotMapped]
         public List<Guid>? CategoryIds { get; set; }
 
@@ -40,6 +42,7 @@ namespace MoneyNote.Identity.Enities
             public string UrlRef { get; set; }
 
             public long CountView { get; set; }
+            public bool IsPublished { get; set; }
 
             [NotMapped]
             public List<Guid>? CategoryIds { get; set; }
