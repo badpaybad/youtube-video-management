@@ -39,6 +39,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                 var exited = db.CmsCategories.FirstOrDefault(i => i.Id == data.Id );
                 if (exited == null)
                 {
+                    
                     db.CmsCategories.Add(data);
                 }
                 else

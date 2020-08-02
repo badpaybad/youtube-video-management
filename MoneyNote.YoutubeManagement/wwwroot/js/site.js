@@ -1323,26 +1323,34 @@ var Home = {
             isPublished = $("#contentPublished").prop("checked");
         }
 
+        var dataToPost = {
+            title: jQuery('#contentTitle').val(),
+            urlRef: jQuery('#contentUrlRef').val(),
+            thumbnail: jQuery('#contentThumbnail').val(),
+            thumbnailWidth: parseInt('0' + jQuery('#contentThumbnailWidth').val()),
+            thumbnailHeight: parseInt(jQuery('0' + '#contentThumbnailHeight').val()),
+            videoWidth: parseInt(jQuery('0' + '#contentVideoWidth').val()),
+            videoHeight: parseInt(jQuery('0' + '#contentVideoHeight').val()),
+            description: jQuery('#contentDescription').val(),
+            isDeleted: isPublished == true ? 0 : 0,
+            isPublished: isPublished == true ? 1 : 0,
+            categoryIds: categories,
+            parentId: App.guidEmpty(),
+            id: Home._contentId,
+            countView:0
+        };
+
+        dataToPost.thumbnailWidth = isNaN(dataToPost.thumbnailWidth) ? 0 : dataToPost.thumbnailWidth;
+        dataToPost.thumbnailHeight = isNaN(dataToPost.thumbnailHeight) ? 0 : dataToPost.thumbnailHeight;
+        dataToPost.videoWidth = isNaN(dataToPost.videoWidth) ? 0 : dataToPost.videoWidth;
+        dataToPost.videoHeight = isNaN(dataToPost.videoHeight) ? 0 : dataToPost.videoHeight;
+
         jQuery.ajax({
             method: "POST",
             url: "/Content/CreateOrUpdate",
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
-            data: JSON.stringify({
-                title: jQuery('#contentTitle').val(),
-                urlRef: jQuery('#contentUrlRef').val(),
-                thumbnail: jQuery('#contentThumbnail').val(),
-                thumbnailWidth: parseInt('0'+ jQuery('#contentThumbnailWidth').val()),
-                thumbnailHeight: parseInt(jQuery('0' +'#contentThumbnailHeight').val()),
-                videoWidth: parseInt(jQuery('0' +'#contentVideoWidth').val()),
-                videoHeight: parseInt(jQuery('0' +'#contentVideoHeight').val()),
-                description: jQuery('#contentDescription').val(),
-                isDeleted: isPublished == true ? 0 : 0,
-                isPublished: isPublished == true ? 1 : 0,
-                categoryIds: categories,
-                parentId: App.guidEmpty(),
-                id: Home._contentId
-            })
+            data: JSON.stringify(dataToPost)
         }).done(function (msg) {
             if (msg.code == 0) {
                 Home.loadContent();

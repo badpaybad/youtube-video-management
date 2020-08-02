@@ -13,7 +13,7 @@ namespace MoneyNote.Identity.Enities
         public class Dto
         {
             public Guid Id { get; set; }
-            public Guid ParentId { get; set; }
+            public Guid? ParentId { get; set; }
             public string Title { get; set; }
             public int ItemsCount { get; set; }
 

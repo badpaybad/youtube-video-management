@@ -12,15 +12,15 @@ namespace MoneyNote.Identity.Enities
         [Column(TypeName ="varchar(36)")]
         public Guid Id { get; set; } = Guid.NewGuid();
         [Column(TypeName = "varchar(36)")]
-        public Guid ParentId { get; set; } = Guid.Empty;
+        public Guid? ParentId { get; set; } = Guid.Empty;
         [Column(TypeName = "varchar(36)")]
-        public Guid TenantId { get; set; } = Guid.Empty;
-        public int IsDeleted { get; set; }
+        public Guid? TenantId { get; set; } = Guid.Empty;
+        public int? IsDeleted { get; set; }
         [Column(TypeName = "varchar(36)")]
-        public Guid CreatedBy { get; set; } = Guid.Empty;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public Guid? CreatedBy { get; set; } = Guid.Empty;
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
         [Column(TypeName = "varchar(36)")]
-        public Guid UpdatedBy { get; set; } = Guid.Empty;
+        public Guid? UpdatedBy { get; set; } = Guid.Empty;
         public DateTime? UpdatedAt { get; set; }
     }
 }

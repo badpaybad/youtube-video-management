@@ -43,6 +43,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                 var exited = db.CmsContents.FirstOrDefault(i => i.Id == data.Id);
                 if (exited == null)
                 {
+                    data.CountView =  0;
                     db.CmsContents.Add(data);
                 }
                 else
