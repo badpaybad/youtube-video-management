@@ -1216,7 +1216,7 @@ var Home = {
             jQuery('#contentVideoWidth').val(content.videoWidth);
             jQuery('#contentVideoHeight').val(content.videoHeight);
 
-            if (content.isDeleted == 1) {
+            if (content.isPublished == 1) {
                 jQuery('#contentPublished').prop('checked', true);
             } else {
 
