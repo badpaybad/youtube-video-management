@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using MoneyNote.Identity;
 using MoneyNote.Identity.Enities;
 using MoneyNote.Identity.PermissionSchemes;
+using MoneyNote.YoutubeManagement.Api.Models;
 using MoneyNote.YoutubeManagement.Models;
 using MoneyNote.YoutubeManagement.Repository;
+using Org.BouncyCastle.Ocsp;
 
 namespace MoneyNote.YoutubeManagement.Api
 {
@@ -17,9 +19,10 @@ namespace MoneyNote.YoutubeManagement.Api
     [ApiController]
     //[ClaimAndValidatePermission("*", "ApiYoutubeContent", true)]
     [AllowAnonymous]
-    [ApiExplorerSettings(IgnoreApi = false)]   
+    [ApiExplorerSettings(IgnoreApi = false)]
     public class YoutubeContentController : ControllerBase
     {
+        static Random _rnd = new Random();
         [Route("ListCategory")]
         [HttpPost]
         public JsonResponse<CategoryJsGridResult> ListCategory(JsGridFilter filter)
@@ -60,5 +63,73 @@ namespace MoneyNote.YoutubeManagement.Api
                 return new JsonResponse<CmsContent> { data = exited };
             }
         }
+
+
+        [Route("ListContentRelated")]
+        [HttpPost]
+        public JsonResponse<ContentJsGridResult> GetContentRelated(ContentRelatedRequest request)
+        {
+            request.Type = (request.Type ?? string.Empty).ToLower();
+            request.SortType = (request.SortType ?? string.Empty).ToLower();
+
+            if (request.SortType.IndexOf("random") >= 0)
+            {
+                request.SortType = _rnd.Next(1, 1000000) % 2 == 0 ? "oldest" : "newest";
+            }
+
+            using (var db = new MoneyNoteDbContext())
+            {
+                var query = db.CmsContents.Join(db.CmsRelations, c => c.Id, r => r.ContentId, (c, r) => new { c, r });
+                if (request.Type.IndexOf("image") >= 0)
+                {
+                    query = query.Where(i => i.c.UrlRef == string.Empty || i.c.UrlRef == null);
+                }
+                if (request.ContentId != null && request.ContentId != Guid.Empty)
+                {
+                    query = query.Where(i => i.r.ContentId == request.ContentId);
+                }
+
+                var categories = query.Select(i => i.r.CategoryId).Distinct().ToList();
+
+                var relation = query.Select(i => new CmsRelation.Dto { CategoryId = i.r.CategoryId, ContentId = i.r.ContentId })
+                        .Distinct().ToList();
+
+                var tempQuery = query.Where(i => i.c.Id != request.ContentId)
+                    .Where(i => categories.Contains(i.r.CategoryId));
+
+                if (request.SortType.IndexOf("oldest") >= 0)
+                {
+                    tempQuery = tempQuery.OrderBy(i => i.c.CreatedAt);
+                }
+                else
+                {
+                    tempQuery = tempQuery.OrderByDescending(i => i.c.CreatedAt);
+                }
+
+                var total = tempQuery.Count();
+
+                if (request.pageIndex != null && request.pageSize > 0)
+                {
+                    int skip = (request.pageIndex.Value - 1) * request.pageSize.Value;
+                    skip = skip < 0 ? 0 : skip;
+
+                    int take = request.pageSize.Value;
+                    tempQuery = tempQuery.Skip(skip).Take(take);
+                }
+
+                var data = tempQuery.Select(i => i.c).ToList();
+
+                return new JsonResponse<ContentJsGridResult>
+                {
+                    data = new ContentJsGridResult
+                    {
+                        data = data,
+                        itemsCount = total,
+                        listRelation= relation
+                    },
+                };
+            }
+        }
+
     }
 }

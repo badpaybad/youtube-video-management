@@ -88,8 +88,13 @@ namespace MoneyNote.YoutubeManagement.Repository
 
                 itemsCount = query.LongCount();
 
-                if (filter.pageSize != 0)
-                    query = query.Skip((filter.pageIndex - 1) * filter.pageSize).Take(filter.pageSize);
+                if (filter.pageSize > 0)
+                {
+                    int skip = (filter.pageIndex - 1) * filter.pageSize;
+                    skip = skip < 0 ? 0 : skip;
+
+                    query = query.Skip(skip).Take(filter.pageSize);
+                }
 
                 data = query.ToList();
 
@@ -100,7 +105,7 @@ namespace MoneyNote.YoutubeManagement.Repository
                 {
                     listRelation = db.CmsRelations.Where(i => contentIds.Contains(i.ContentId))
                         .Select(i => new CmsRelation.Dto { CategoryId = i.CategoryId, ContentId = i.ContentId })
-                        .ToList();
+                        .Distinct().ToList();
                 }
 
                 //cbeadc96-a21a-4ab8-a69b-8a56c893ffce

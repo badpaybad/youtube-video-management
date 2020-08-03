@@ -8,8 +8,8 @@ namespace MoneyNote.YoutubeManagement.Models
 {
     public class JsGridFilter
     {
-        public int pageIndex { get; set; } = 1;
-        public int pageSize { get; set; } = 10;
+        public int pageIndex { get; set; } = 0;
+        public int pageSize { get; set; } = 0;
         public Guid? parentId { get; set; } = Guid.Empty;
         public Guid? contentId { get; set; } = Guid.Empty;
         public List<Guid>? categoryIds { get; set; } = new List<Guid>();
@@ -54,5 +54,30 @@ namespace MoneyNote.YoutubeManagement.Models
     public class ContentRequest
     {
         public Guid id { get; set; }
+    }
+
+    public class LoginRequest
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+
+    public class ContentRelatedRequest
+    {
+        public Guid? ContentId { get; set; }
+
+        /// <summary>
+        /// image | video | all
+        /// </summary>
+        public string Type { get; set; }
+        public string Keywords { get; set; }
+
+        public int? pageIndex { get; set; } = 0;
+        public int? pageSize { get; set; } = 0;
+
+        /// <summary>
+        /// newest | oldest | random
+        /// </summary>
+        public string SortType { get; set; }
     }
 }
