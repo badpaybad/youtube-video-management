@@ -1153,7 +1153,7 @@ var Home = {
                         originUrl = itm.thumbnail;
                     }
 
-                    var publised = itm.isDeleted == 1 ? "Publised" : "Unpublish";
+                    var publised = itm.isPublished == 1 ? "Publised" : "Unpublish";
                     template += `<div style='width:24.9%;max-width:24.9%;float:left; padding-left:1%;padding-bottom:40px;'>
                                     <img src='${itm.thumbnail}' alt='${itm.title}' title='${itm.thumbnailWidth}x${itm.thumbnailHeight}' style='width:96%; height:175px'/>
                                     <div style='width:95%; clear:both; padding-left:3px;'>                                                                             
