@@ -79,7 +79,7 @@ namespace MoneyNote.YoutubeManagement.Api
 
             using (var db = new MoneyNoteDbContext())
             {
-                var query = db.CmsContents.Join(db.CmsRelations, c => c.Id, r => r.ContentId, (c, r) => new { c, r });
+                var query = db.CmsContents.Where(i=>i.IsPublished==1).Join(db.CmsRelations, c => c.Id, r => r.ContentId, (c, r) => new { c, r });
                 if (request.Type.IndexOf("image") >= 0)
                 {
                     query = query.Where(i => i.c.UrlRef == string.Empty || i.c.UrlRef == null);

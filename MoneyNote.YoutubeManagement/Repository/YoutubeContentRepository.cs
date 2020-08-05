@@ -49,7 +49,7 @@ namespace MoneyNote.YoutubeManagement.Repository
                 var query = db.CmsContents.AsQueryable();
                 if (onlyPublished)
                 {
-                    query = query.Where(i => i.IsDeleted == 1);
+                    query = query.Where(i => i.IsPublished == 1);
                 }
                 if (!string.IsNullOrEmpty(filter.title))
                 {
