@@ -84,12 +84,14 @@ namespace MoneyNote.YoutubeManagement.Api
                 {
                     query = query.Where(i => i.c.UrlRef == string.Empty || i.c.UrlRef == null);
                 }
+
+                var queryCat = query.AsQueryable();
+
                 if (request.ContentId != null && request.ContentId != Guid.Empty)
                 {
-                    query = query.Where(i => i.r.ContentId == request.ContentId);
+                    queryCat = queryCat.Where(i => i.r.ContentId == request.ContentId);
                 }
-
-                var categories = query.Select(i => i.r.CategoryId).Distinct().ToList();
+                var categories = queryCat.Select(i => i.r.CategoryId).Distinct().ToList();
 
                 var relation = query.Select(i => new CmsRelation.Dto { CategoryId = i.r.CategoryId, ContentId = i.r.ContentId })
                         .Distinct().ToList();
