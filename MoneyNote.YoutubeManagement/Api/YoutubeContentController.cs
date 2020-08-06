@@ -93,7 +93,7 @@ namespace MoneyNote.YoutubeManagement.Api
                 }
                 var categories = queryCat.Select(i => i.r.CategoryId).Distinct().ToList();
 
-                var relation = query.Select(i => new CmsRelation.Dto { CategoryId = i.r.CategoryId, ContentId = i.r.ContentId })
+                var relation = queryCat.Select(i => new CmsRelation.Dto { CategoryId = i.r.CategoryId, ContentId = i.r.ContentId })
                         .Distinct().ToList();
 
                 var tempQuery = query.Where(i => i.c.Id != request.ContentId)
