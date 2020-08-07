@@ -11,6 +11,7 @@ namespace MoneyNote.YoutubeManagement.Repository
 {
     public class YoutubeContentRepository
     {
+        static Random _rnd = new Random();
         public CategoryJsGridResult ListCategory(JsGridFilter filter)
         {
             filter = filter ?? new JsGridFilter();
@@ -28,7 +29,7 @@ namespace MoneyNote.YoutubeManagement.Repository
                 {
                     query = query.Where(i => i.ParentId == null || i.ParentId == Guid.Empty);
                 }
-                lst = query.ToList();
+                lst = query.Distinct().ToList();
 
                 return new CategoryJsGridResult { data = lst, itemsCount = lst.Count };
             }
@@ -43,13 +44,24 @@ namespace MoneyNote.YoutubeManagement.Repository
             List<CmsContent> data = new List<CmsContent>();
             //List<CmsCategory> listCategory = new List<CmsCategory>();
             List<CmsRelation.Dto> listRelation = new List<CmsRelation.Dto>();
-
+            if (filter.SortType.IndexOf("random") >= 0)
+            {
+                filter.SortType = _rnd.Next(1, 1000000) % 2 == 0 ? "oldest" : "newest";
+            }
             using (var db = new MoneyNoteDbContext())
             {
                 var query = db.CmsContents.AsQueryable();
                 if (onlyPublished)
                 {
                     query = query.Where(i => i.IsPublished == 1);
+                }
+                if (filter.Type.IndexOf("image") >= 0)
+                {
+                    query = query.Where(i => i.UrlRef == string.Empty || i.UrlRef == null);
+                }
+                else
+                {
+                    query = query.Where(i => i.UrlRef != string.Empty && i.UrlRef != null);
                 }
                 if (!string.IsNullOrEmpty(filter.title))
                 {
@@ -95,8 +107,15 @@ namespace MoneyNote.YoutubeManagement.Repository
 
                     query = query.Skip(skip).Take(filter.pageSize);
                 }
-
-                data = query.ToList();
+                if (filter.SortType.IndexOf("oldest") >= 0)
+                {
+                    query = query.OrderBy(i => i.CreatedAt);
+                }
+                else
+                {
+                    query = query.OrderByDescending(i => i.CreatedAt);
+                }
+                data = query.Distinct().ToList();
 
                 //listCategory = db.CmsCategories.Where(i => i.IsDeleted == 0).ToList();
 

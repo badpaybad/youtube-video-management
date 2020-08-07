@@ -19,7 +19,17 @@ namespace MoneyNote.YoutubeManagement.Models
         public string description { get; set; }
         public string urlRef { get; set; }
         public string moduleCode { get; set; }
-        public string permissionCode { get; set; }        
+        public string permissionCode { get; set; }
+
+        /// <summary>
+        /// image | video | all
+        /// </summary>
+        public string Type { get; set; }
+        /// <summary>
+        /// newest | oldest | random
+        /// </summary>
+        public string SortType { get; set; }
+
     }
 
     public interface IJsGridResult<T>
@@ -70,14 +80,15 @@ namespace MoneyNote.YoutubeManagement.Models
         /// image | video | all
         /// </summary>
         public string Type { get; set; }
-        public string Keywords { get; set; }
-
-        public int? pageIndex { get; set; } = 0;
-        public int? pageSize { get; set; } = 0;
-
         /// <summary>
         /// newest | oldest | random
         /// </summary>
         public string SortType { get; set; }
+
+        public string Keywords { get; set; }
+
+        public int? pageIndex { get; set; } = 0;
+        public int? pageSize { get; set; } = 0;
+       
     }
 }

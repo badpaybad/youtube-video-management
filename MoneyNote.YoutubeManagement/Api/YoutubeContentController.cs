@@ -123,7 +123,7 @@ namespace MoneyNote.YoutubeManagement.Api
                     tempQuery = tempQuery.Skip(skip).Take(take);
                 }
 
-                var data = tempQuery.Select(i => i.c).ToList();
+                var data = tempQuery.Select(i => i.c).Distinct().ToList();
 
                 return new JsonResponse<ContentJsGridResult>
                 {
