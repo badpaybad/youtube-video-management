@@ -100,19 +100,19 @@ namespace MoneyNote.YoutubeManagement.Api
                 var relation = queryCat.Select(i => new CmsRelation.Dto { CategoryId = i.r.CategoryId, ContentId = i.r.ContentId })
                         .Distinct().ToList();
 
-                var tempQuery = query.Where(i => i.c.Id != request.ContentId)
-                    .Where(i => categories.Contains(i.r.CategoryId));
+                var queryContent = query.Where(i => i.c.Id != request.ContentId)
+                    .Where(i => categories.Contains(i.r.CategoryId)).Select(i => i.c).Distinct();
 
                 if (request.SortType.IndexOf("oldest") >= 0)
                 {
-                    tempQuery = tempQuery.OrderBy(i => i.c.CreatedAt);
+                    queryContent = queryContent.OrderBy(i => i.CreatedAt);
                 }
                 else
                 {
-                    tempQuery = tempQuery.OrderByDescending(i => i.c.CreatedAt);
+                    queryContent = queryContent.OrderByDescending(i => i.CreatedAt);
                 }
-
-                var total = tempQuery.Count();
+             
+                var total = queryContent.Count();
 
                 if (request.pageIndex != null && request.pageSize > 0)
                 {
@@ -120,10 +120,10 @@ namespace MoneyNote.YoutubeManagement.Api
                     skip = skip < 0 ? 0 : skip;
 
                     int take = request.pageSize.Value;
-                    tempQuery = tempQuery.Skip(skip).Take(take);
+                    queryContent = queryContent.Skip(skip).Take(take);
                 }
 
-                var data = tempQuery.Select(i => i.c).Distinct().ToList();
+                var data = queryContent.ToList();
 
                 return new JsonResponse<ContentJsGridResult>
                 {
