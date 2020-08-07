@@ -84,7 +84,7 @@ namespace MoneyNote.YoutubeManagement.Api
                 {
                     query = query.Where(i => i.c.UrlRef == string.Empty || i.c.UrlRef == null);
                 }
-                else
+                if(request.Type.IndexOf("video") >= 0)
                 {
                     query = query.Where(i => i.c.UrlRef != string.Empty && i.c.UrlRef != null);
                 }

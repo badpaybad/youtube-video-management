@@ -59,7 +59,7 @@ namespace MoneyNote.YoutubeManagement.Repository
                 {
                     query = query.Where(i => i.UrlRef == string.Empty || i.UrlRef == null);
                 }
-                else
+                if (filter.Type.IndexOf("video") >= 0)
                 {
                     query = query.Where(i => i.UrlRef != string.Empty && i.UrlRef != null);
                 }
@@ -115,7 +115,7 @@ namespace MoneyNote.YoutubeManagement.Repository
                 {
                     query = query.OrderByDescending(i => i.CreatedAt);
                 }
-                data = query.Distinct().ToList();
+                data = query.ToList();
 
                 //listCategory = db.CmsCategories.Where(i => i.IsDeleted == 0).ToList();
 
