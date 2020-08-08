@@ -42,17 +42,27 @@ namespace MoneyNote.YoutubeManagement.Repository
                             foreach (var v in vidsInChanl)
                             {
                                 var exited = db.CmsContents.FirstOrDefault(i => i.Title == v.Title);
+                                var cid = v.Id;
                                 if (exited == null)
                                 {
+                                    cid = v.Id;
                                     db.CmsContents.Add(v);
+                                }
+                                else
+                                {
+                                    cid = exited.Id;
+                                }
 
+                                var r = db.CmsRelations.Where(i => i.ContentId == cid && i.CategoryId == cateId).FirstOrDefault();
+
+                                if (r == null)
+                                {
                                     db.CmsRelations.Add(new Identity.Enities.CmsRelation
                                     {
-                                        ContentId = v.Id,
+                                        ContentId = cid,
                                         CategoryId = cateId
                                     });
                                 }
-
                             }
                             db.SaveChanges();
                         }
