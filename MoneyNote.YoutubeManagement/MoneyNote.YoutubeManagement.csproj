@@ -22,4 +22,10 @@
     <ProjectReference Include="..\MoneyNote.Identity\MoneyNote.Identity.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="youtubeschedule.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

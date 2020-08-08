@@ -84,6 +84,8 @@ namespace MoneyNote.YoutubeManagement
 
             new CategoryScheduler().Run();
 
+            new YoutubeCrawlerScheduler().Start();
+
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {

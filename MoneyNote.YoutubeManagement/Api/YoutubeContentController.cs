@@ -72,7 +72,7 @@ namespace MoneyNote.YoutubeManagement.Api
             request.Type = (request.Type ?? string.Empty).ToLower();
             request.SortType = (request.SortType ?? string.Empty).ToLower();
 
-            if (request.SortType.IndexOf("random") >= 0)
+            if (string.IsNullOrEmpty(request.SortType) == false && request.SortType.IndexOf("random") >= 0)
             {
                 request.SortType = _rnd.Next(1, 1000000) % 2 == 0 ? "oldest" : "newest";
             }
@@ -80,11 +80,11 @@ namespace MoneyNote.YoutubeManagement.Api
             using (var db = new MoneyNoteDbContext())
             {
                 var query = db.CmsContents.Where(i=>i.IsPublished==1).Join(db.CmsRelations, c => c.Id, r => r.ContentId, (c, r) => new { c, r });
-                if (request.Type.IndexOf("image") >= 0)
+                if (string.IsNullOrEmpty(request.Type) == false && request.Type.IndexOf("image") >= 0)
                 {
                     query = query.Where(i => i.c.UrlRef == string.Empty || i.c.UrlRef == null);
                 }
-                if(request.Type.IndexOf("video") >= 0)
+                if(string.IsNullOrEmpty(request.Type) == false && request.Type.IndexOf("video") >= 0)
                 {
                     query = query.Where(i => i.c.UrlRef != string.Empty && i.c.UrlRef != null);
                 }
@@ -103,7 +103,7 @@ namespace MoneyNote.YoutubeManagement.Api
                 var queryContent = query.Where(i => i.c.Id != request.ContentId)
                     .Where(i => categories.Contains(i.r.CategoryId)).Select(i => i.c).Distinct();
 
-                if (request.SortType.IndexOf("oldest") >= 0)
+                if (string.IsNullOrEmpty(request.Type) == false && request.SortType.IndexOf("oldest") >= 0)
                 {
                     queryContent = queryContent.OrderBy(i => i.CreatedAt);
                 }

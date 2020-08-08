@@ -43,7 +43,7 @@ namespace MoneyNote.YoutubeManagement.Controllers
                 var exited = db.CmsContents.FirstOrDefault(i => i.Id == data.Id);
                 if (exited == null)
                 {
-                    data.CountView =  0;
+                    data.CountView = 0;
                     db.CmsContents.Add(data);
                 }
                 else
@@ -116,49 +116,35 @@ namespace MoneyNote.YoutubeManagement.Controllers
 
             return Json(new JsonResponse<ContentRelationModel> { data = data });
         }
-
+        static YoutubeCrawler _youtubeCrawler = new YoutubeCrawler();
         public IActionResult YoutubeCrawl([FromBody] YoutubeCrawlRequest request)
         {
             try
             {
-                using (var httpClient = new HttpClient())
+
+                var cmsContent = _youtubeCrawler.CrawlVideo(request.url, out Exception e);
+
+                if (request.autoSave)
                 {
-
-                    httpClient.BaseAddress = new Uri("https://www.youtube.com/");
-
-                    var result = httpClient.GetStringAsync(request.url).GetAwaiter().GetResult();
-
-                    int.TryParse(FindYoutubeContent(result, "<meta property=\"og:image:width\" content=\"", "\">"), out int tw);
-                    int.TryParse(FindYoutubeContent(result, "<meta property=\"og:image:height\" content=\"", "\">"), out int th);
-                    int.TryParse(FindYoutubeContent(result, "<meta property=\"og:video:width\" content=\"", "\">"), out int vw);
-                    int.TryParse(FindYoutubeContent(result, "<meta property=\"og:video:height\" content=\"", "\">"), out int vh);
-
-                    CmsContent cmsContent = new CmsContent
+                    using (var db = new MoneyNoteDbContext())
                     {
-                        Title = FindYoutubeContent(result, "<meta property=\"og:title\" content=\"", "\">"),
-                        Thumbnail = FindYoutubeContent(result, "<meta property=\"og:image\" content=\"", "\">"),
-                        UrlRef = FindYoutubeContent(result, "<meta property=\"og:url\" content=\"", "\">"),
-                        Description = FindYoutubeContent(result, "\\\"description\\\":{\\\"simpleText\\\":\\\"", "\\\"}"),
-                        ThumbnailHeight = th,
-                        ThumbnailWidth = tw,
-                        VideoHeight = vh,
-                        VideoWidth = vw,
-                    };
-
-                    cmsContent = cmsContent.CalculateThumbnail();
-
-                    if (request.autoSave)
-                    {
-                        using (var db = new MoneyNoteDbContext())
-                        {
-                            db.CmsContents.Add(cmsContent);
-                            db.SaveChanges();
-                        }
+                        db.CmsContents.Add(cmsContent);
+                        db.SaveChanges();
                     }
-
+                }
+                if (e == null)
+                {
                     return base.Json(new JsonResponse<CmsContent>
                     {
                         data = cmsContent
+                    });
+                }
+                else
+                {
+                    return Json(new JsonResponse<CmsContent>
+                    {
+                        code = 1,
+                        message = e.Message
                     });
                 }
 

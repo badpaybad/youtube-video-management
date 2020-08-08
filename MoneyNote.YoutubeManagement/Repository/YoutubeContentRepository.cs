@@ -44,7 +44,7 @@ namespace MoneyNote.YoutubeManagement.Repository
             List<CmsContent> data = new List<CmsContent>();
             //List<CmsCategory> listCategory = new List<CmsCategory>();
             List<CmsRelation.Dto> listRelation = new List<CmsRelation.Dto>();
-            if (filter.SortType.IndexOf("random") >= 0)
+            if (string.IsNullOrEmpty(filter.SortType) == false && filter.SortType.IndexOf("random") >= 0)
             {
                 filter.SortType = _rnd.Next(1, 1000000) % 2 == 0 ? "oldest" : "newest";
             }
@@ -55,11 +55,11 @@ namespace MoneyNote.YoutubeManagement.Repository
                 {
                     query = query.Where(i => i.IsPublished == 1);
                 }
-                if (filter.Type.IndexOf("image") >= 0)
+                if (string.IsNullOrEmpty(filter.Type) == false && filter.Type.IndexOf("image") >= 0)
                 {
                     query = query.Where(i => i.UrlRef == string.Empty || i.UrlRef == null);
                 }
-                if (filter.Type.IndexOf("video") >= 0)
+                if (string.IsNullOrEmpty(filter.Type) == false && filter.Type.IndexOf("video") >= 0)
                 {
                     query = query.Where(i => i.UrlRef != string.Empty && i.UrlRef != null);
                 }
@@ -75,7 +75,7 @@ namespace MoneyNote.YoutubeManagement.Repository
                 {
                     query = query.Where(i => i.UrlRef.Contains(filter.urlRef));
                 }
-              
+
                 if (filter.findRootItem != null && filter.findRootItem == true)
                 {
                     //query = query.Where(i => i.ParentId == null || i.ParentId == Guid.Empty);
@@ -107,7 +107,7 @@ namespace MoneyNote.YoutubeManagement.Repository
 
                     query = query.Skip(skip).Take(filter.pageSize);
                 }
-                if (filter.SortType.IndexOf("oldest") >= 0)
+                if (string.IsNullOrEmpty(filter.SortType) == false && filter.SortType.IndexOf("oldest") >= 0)
                 {
                     query = query.OrderBy(i => i.CreatedAt);
                 }

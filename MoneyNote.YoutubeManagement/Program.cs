@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MoneyNote.YoutubeManagement.Repository;
 
 namespace MoneyNote.YoutubeManagement
 {
@@ -13,6 +14,8 @@ namespace MoneyNote.YoutubeManagement
     {
         public static void Main(string[] args)
         {
+            //new YoutubeCrawler().CrawlChannel("https://www.youtube.com/channel/UCfGn2JDKc4faJw29XiC95PQ/videos");
+
             CreateHostBuilder(args).Build().Run();
         }
 
